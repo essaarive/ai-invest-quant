@@ -35,10 +35,11 @@ ai-invest-quant run-demo --output-dir /tmp/ai_invest_quant_demo
 - Performance summary metrics
 - Markdown backtest report generation
 - End-to-end ETF rotation demo pipeline
+- Local Streamlit Dashboard for demo backtest visualization
 
 ## Not Supported
 
-This project does not support live trading, real broker connections, automatic order placement, external data pulling, Crypto, or a Dashboard.
+This project does not support live trading, real broker connections, automatic order placement, external data pulling, Crypto, user login, or cloud deployment.
 
 ## CSV Data Format
 
@@ -153,6 +154,54 @@ ai-invest-quant run-demo \
 ```
 
 The `ai-invest-quant` CLI only runs local historical backtests. It does not connect to real brokers, does not place orders, and does not provide investment advice.
+
+## Dashboard
+
+Install development dependencies:
+
+```bash
+pip install -e ".[dev]"
+```
+
+Run the local Streamlit Dashboard:
+
+```bash
+streamlit run dashboard/app.py
+```
+
+The Dashboard lets you configure the bundled demo backtest, run it locally, and view:
+
+- Core performance metrics
+- NAV curve
+- Drawdown curve
+- Latest positions
+- Recent trades
+- Recent signals
+- Generated Markdown report
+- CSV upload for your own ETF price data
+- Buttons to download output files
+
+By default, Dashboard outputs are written to:
+
+```text
+outputs/dashboard_demo/
+```
+
+You can use the default sample CSV or upload your own ETF CSV from the sidebar. Uploaded CSV files still go through the same local data validation pipeline and must contain:
+
+```text
+date,symbol,open,high,low,close,volume,amount
+```
+
+After a run completes, the Dashboard provides download output files buttons for:
+
+- `nav.csv`
+- `trades.csv`
+- `positions.csv`
+- `signals.csv`
+- `report.md`
+
+The Dashboard only displays local historical backtest results. It does not connect to real brokers, does not download external data, does not place orders, and does not provide investment advice.
 
 The lower-level Python pipeline can also be called directly:
 

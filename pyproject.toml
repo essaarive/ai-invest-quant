@@ -15,6 +15,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest",
+  "streamlit",
 ]
 
 [project.scripts]
@@ -27,4 +28,3 @@ package-dir = {"" = "src"}
 where = ["src"]
 include = ["ai_invest_quant*"]
 exclude = ["tests*"]
-
