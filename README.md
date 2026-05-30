@@ -153,6 +153,27 @@ ai-invest-quant run-demo \
   --no-risk-manager
 ```
 
+Run from a local experiment config:
+
+```bash
+ai-invest-quant run-demo --config configs/demo_config.json
+```
+
+Override config values from the CLI:
+
+```bash
+ai-invest-quant run-demo \
+  --config configs/demo_config.json \
+  --top-n 2 \
+  --output-dir outputs/config_test
+```
+
+Parameter priority is:
+
+```text
+CLI arguments > config file > defaults
+```
+
 The `ai-invest-quant` CLI only runs local historical backtests. It does not connect to real brokers, does not place orders, and does not provide investment advice.
 
 ## Dashboard
@@ -180,12 +201,45 @@ The Dashboard lets you configure the bundled demo backtest, run it locally, and 
 - Generated Markdown report
 - CSV upload for your own ETF price data
 - Buttons to download output files
+- Local JSON experiment config save/load for reproducible runs
 
 By default, Dashboard outputs are written to:
 
 ```text
 outputs/dashboard_demo/
 ```
+
+The default Dashboard experiment config is:
+
+```text
+configs/demo_config.json
+```
+
+The config is a local JSON file containing run parameters:
+
+```json
+{
+  "csv_path": "data/samples/sample_etf_prices.csv",
+  "output_dir": "outputs/dashboard_demo",
+  "initial_cash": 1000000,
+  "rebalance_interval": 5,
+  "top_n": 3,
+  "target_exposure": 0.8,
+  "fee_rate": 0.001,
+  "slippage": 0.0005,
+  "use_risk_manager": true
+}
+```
+
+Use `Load Config` in the sidebar to load parameters from a JSON file. Use `Save Config` to save the current Dashboard parameters for later reproduction.
+
+The same config can be used by the CLI:
+
+```bash
+ai-invest-quant run-demo --config configs/demo_config.json
+```
+
+Experiment config files only store local historical backtest parameters. They should not contain broker credentials or secrets. They do not enable real trading, automatic order placement, or financial advice.
 
 You can use the default sample CSV or upload your own ETF CSV from the sidebar. Uploaded CSV files still go through the same local data validation pipeline and must contain:
 

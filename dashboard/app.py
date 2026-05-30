@@ -7,12 +7,18 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from ai_invest_quant.config.experiment_config import (
+    DEFAULT_EXPERIMENT_CONFIG,
+    load_experiment_config,
+    save_experiment_config,
+)
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
 
 
 DEFAULT_CSV_PATH = "data/samples/sample_etf_prices.csv"
 DEFAULT_OUTPUT_DIR = "outputs/dashboard_demo"
+DEFAULT_CONFIG_PATH = "configs/demo_config.json"
 
 
 def main() -> None:
@@ -20,17 +26,76 @@ def main() -> None:
     st.title("AI Invest Quant Dashboard")
 
     with st.sidebar:
+        config = st.session_state.setdefault("experiment_config", dict(DEFAULT_EXPERIMENT_CONFIG))
+        st.header("Experiment Config")
+        config_path = st.text_input("Config JSON Path", value=DEFAULT_CONFIG_PATH)
+        config_columns = st.columns(2)
+        if config_columns[0].button("Load Config"):
+            try:
+                config = load_experiment_config(config_path)
+                st.session_state["experiment_config"] = config
+                st.success(f"Loaded config: {config_path}")
+            except (FileNotFoundError, ValueError) as exc:
+                st.error(str(exc))
+
         st.header("Backtest Parameters")
-        csv_path = st.text_input("CSV Path", value=DEFAULT_CSV_PATH)
+        csv_path = st.text_input("CSV Path", value=config.get("csv_path", DEFAULT_CSV_PATH))
         uploaded_csv = st.file_uploader("Upload ETF price CSV", type=["csv"])
-        output_dir = st.text_input("Output Directory", value=DEFAULT_OUTPUT_DIR)
-        initial_cash = st.number_input("Initial Cash", min_value=1.0, value=1_000_000.0, step=10_000.0)
-        rebalance_interval = st.number_input("Rebalance Interval", min_value=1, value=5, step=1)
-        top_n = st.number_input("Top N", min_value=1, value=3, step=1)
-        target_exposure = st.slider("Target Exposure", min_value=0.0, max_value=1.0, value=0.8, step=0.05)
-        fee_rate = st.number_input("Fee Rate", min_value=0.0, value=0.001, step=0.0001, format="%.4f")
-        slippage = st.number_input("Slippage", min_value=0.0, value=0.0005, step=0.0001, format="%.4f")
-        use_risk_manager = st.checkbox("Use Risk Manager", value=True)
+        output_dir = st.text_input("Output Directory", value=config.get("output_dir", DEFAULT_OUTPUT_DIR))
+        initial_cash = st.number_input(
+            "Initial Cash",
+            min_value=1.0,
+            value=float(config.get("initial_cash", 1_000_000)),
+            step=10_000.0,
+        )
+        rebalance_interval = st.number_input(
+            "Rebalance Interval",
+            min_value=1,
+            value=int(config.get("rebalance_interval", 5)),
+            step=1,
+        )
+        top_n = st.number_input("Top N", min_value=1, value=int(config.get("top_n", 3)), step=1)
+        target_exposure = st.slider(
+            "Target Exposure",
+            min_value=0.0,
+            max_value=1.0,
+            value=float(config.get("target_exposure", 0.8)),
+            step=0.05,
+        )
+        fee_rate = st.number_input(
+            "Fee Rate",
+            min_value=0.0,
+            value=float(config.get("fee_rate", 0.001)),
+            step=0.0001,
+            format="%.4f",
+        )
+        slippage = st.number_input(
+            "Slippage",
+            min_value=0.0,
+            value=float(config.get("slippage", 0.0005)),
+            step=0.0001,
+            format="%.4f",
+        )
+        use_risk_manager = st.checkbox("Use Risk Manager", value=bool(config.get("use_risk_manager", True)))
+        current_config = _build_experiment_config(
+            csv_path=csv_path,
+            output_dir=output_dir,
+            initial_cash=initial_cash,
+            rebalance_interval=int(rebalance_interval),
+            top_n=int(top_n),
+            target_exposure=target_exposure,
+            fee_rate=fee_rate,
+            slippage=slippage,
+            use_risk_manager=use_risk_manager,
+        )
+        if config_columns[1].button("Save Config"):
+            try:
+                save_experiment_config(current_config, config_path)
+                st.session_state["experiment_config"] = current_config
+                st.success(f"Saved config: {config_path}")
+            except ValueError as exc:
+                st.error(str(exc))
+
         run_button = st.button("Run Backtest", type="primary")
 
     if run_button:
@@ -73,6 +138,30 @@ def _resolve_csv_path(csv_path: str, uploaded_csv, output_dir: str) -> str | Non
     uploaded_path.write_bytes(uploaded_csv.getbuffer())
     st.info(f"Using uploaded CSV: {uploaded_path}")
     return str(uploaded_path)
+
+
+def _build_experiment_config(
+    csv_path: str,
+    output_dir: str,
+    initial_cash: float,
+    rebalance_interval: int,
+    top_n: int,
+    target_exposure: float,
+    fee_rate: float,
+    slippage: float,
+    use_risk_manager: bool,
+) -> dict[str, object]:
+    return {
+        "csv_path": csv_path,
+        "output_dir": output_dir,
+        "initial_cash": initial_cash,
+        "rebalance_interval": rebalance_interval,
+        "top_n": top_n,
+        "target_exposure": target_exposure,
+        "fee_rate": fee_rate,
+        "slippage": slippage,
+        "use_risk_manager": use_risk_manager,
+    }
 
 
 def _run_dashboard_backtest(**kwargs) -> None:

@@ -6,6 +6,11 @@ import argparse
 import sys
 from pathlib import Path
 
+from ai_invest_quant.config.experiment_config import (
+    DEFAULT_EXPERIMENT_CONFIG,
+    load_experiment_config,
+    validate_experiment_config,
+)
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
 
@@ -13,6 +18,10 @@ from ai_invest_quant.report.markdown_report import format_number, format_percent
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SAMPLE_CSV = PROJECT_ROOT / "data" / "samples" / "sample_etf_prices.csv"
 DEFAULT_OUTPUT_DIR = "outputs/demo"
+DEFAULT_RUN_DEMO_CONFIG = DEFAULT_EXPERIMENT_CONFIG | {
+    "csv_path": str(DEFAULT_SAMPLE_CSV),
+    "output_dir": DEFAULT_OUTPUT_DIR,
+}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -26,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         args.command_func(args)
-    except ValueError as exc:
+    except (FileNotFoundError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 2
 
@@ -38,14 +47,15 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command")
 
     run_demo_parser = subparsers.add_parser("run-demo", help="Run the built-in ETF rotation demo.")
-    run_demo_parser.add_argument("--csv-path", default=str(DEFAULT_SAMPLE_CSV), help="Input CSV path.")
-    run_demo_parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR, help="Output directory.")
-    run_demo_parser.add_argument("--initial-cash", type=float, default=1_000_000, help="Initial cash.")
-    run_demo_parser.add_argument("--rebalance-interval", type=int, default=5, help="Rebalance interval in trading days.")
-    run_demo_parser.add_argument("--top-n", type=int, default=3, help="Number of symbols to select.")
-    run_demo_parser.add_argument("--target-exposure", type=float, default=0.8, help="Target ETF exposure.")
-    run_demo_parser.add_argument("--fee-rate", type=float, default=0.001, help="Trade fee rate.")
-    run_demo_parser.add_argument("--slippage", type=float, default=0.0005, help="Trade slippage.")
+    run_demo_parser.add_argument("--config", default=None, help="Experiment JSON config path.")
+    run_demo_parser.add_argument("--csv-path", default=None, help="Input CSV path.")
+    run_demo_parser.add_argument("--output-dir", default=None, help="Output directory.")
+    run_demo_parser.add_argument("--initial-cash", type=float, default=None, help="Initial cash.")
+    run_demo_parser.add_argument("--rebalance-interval", type=int, default=None, help="Rebalance interval in trading days.")
+    run_demo_parser.add_argument("--top-n", type=int, default=None, help="Number of symbols to select.")
+    run_demo_parser.add_argument("--target-exposure", type=float, default=None, help="Target ETF exposure.")
+    run_demo_parser.add_argument("--fee-rate", type=float, default=None, help="Trade fee rate.")
+    run_demo_parser.add_argument("--slippage", type=float, default=None, help="Trade slippage.")
 
     risk_group = run_demo_parser.add_mutually_exclusive_group()
     risk_group.add_argument(
@@ -60,24 +70,25 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Disable risk manager.",
     )
-    run_demo_parser.set_defaults(use_risk_manager=True, command_func=run_demo_command)
+    run_demo_parser.set_defaults(use_risk_manager=None, command_func=run_demo_command)
 
     return parser
 
 
 def run_demo_command(args: argparse.Namespace) -> None:
     """Validate arguments, run the demo, and print output paths and metrics."""
-    _validate_run_demo_args(args)
+    run_config = _build_run_demo_config(args)
+    _validate_run_demo_config(run_config)
     result = run_etf_rotation_demo(
-        csv_path=args.csv_path,
-        output_dir=args.output_dir,
-        initial_cash=args.initial_cash,
-        rebalance_interval=args.rebalance_interval,
-        top_n=args.top_n,
-        target_exposure=args.target_exposure,
-        fee_rate=args.fee_rate,
-        slippage=args.slippage,
-        use_risk_manager=args.use_risk_manager,
+        csv_path=run_config["csv_path"],
+        output_dir=run_config["output_dir"],
+        initial_cash=run_config["initial_cash"],
+        rebalance_interval=run_config["rebalance_interval"],
+        top_n=run_config["top_n"],
+        target_exposure=run_config["target_exposure"],
+        fee_rate=run_config["fee_rate"],
+        slippage=run_config["slippage"],
+        use_risk_manager=run_config["use_risk_manager"],
     )
 
     summary = result["summary"]
@@ -93,24 +104,57 @@ def run_demo_command(args: argparse.Namespace) -> None:
     print(f"Sharpe Ratio: {format_number(summary.get('sharpe_ratio'))}")
 
 
-def _validate_run_demo_args(args: argparse.Namespace) -> None:
-    csv_path = Path(args.csv_path)
+def _build_run_demo_config(args: argparse.Namespace) -> dict[str, object]:
+    config = dict(DEFAULT_RUN_DEMO_CONFIG)
+    if args.config is not None:
+        config.update(load_experiment_config(args.config))
+
+    cli_values = {
+        "csv_path": args.csv_path,
+        "output_dir": args.output_dir,
+        "initial_cash": args.initial_cash,
+        "rebalance_interval": args.rebalance_interval,
+        "top_n": args.top_n,
+        "target_exposure": args.target_exposure,
+        "fee_rate": args.fee_rate,
+        "slippage": args.slippage,
+        "use_risk_manager": args.use_risk_manager,
+    }
+    config.update({key: value for key, value in cli_values.items() if value is not None})
+    config = validate_experiment_config(config)
+    config["csv_path"] = str(_resolve_csv_path(config["csv_path"]))
+    return config
+
+
+def _resolve_csv_path(csv_path: str) -> Path:
+    path = Path(csv_path)
+    if path.exists() or path.is_absolute():
+        return path
+
+    project_path = PROJECT_ROOT / path
+    if project_path.exists():
+        return project_path
+
+    return path
+
+
+def _validate_run_demo_config(config: dict[str, object]) -> None:
+    csv_path = Path(str(config["csv_path"]))
     if not csv_path.exists():
         raise ValueError(f"csv_path does not exist: {csv_path}")
-    if args.initial_cash <= 0:
+    if config["initial_cash"] <= 0:
         raise ValueError("initial_cash must be > 0")
-    if args.rebalance_interval <= 0:
+    if config["rebalance_interval"] <= 0:
         raise ValueError("rebalance_interval must be > 0")
-    if args.top_n <= 0:
+    if config["top_n"] <= 0:
         raise ValueError("top_n must be > 0")
-    if args.target_exposure < 0 or args.target_exposure > 1:
+    if config["target_exposure"] < 0 or config["target_exposure"] > 1:
         raise ValueError("target_exposure must be >= 0 and <= 1")
-    if args.fee_rate < 0:
+    if config["fee_rate"] < 0:
         raise ValueError("fee_rate must be >= 0")
-    if args.slippage < 0:
+    if config["slippage"] < 0:
         raise ValueError("slippage must be >= 0")
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

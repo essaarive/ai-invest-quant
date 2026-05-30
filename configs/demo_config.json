@@ -1,0 +1,12 @@
+{
+  "csv_path": "data/samples/sample_etf_prices.csv",
+  "output_dir": "outputs/dashboard_demo",
+  "initial_cash": 1000000,
+  "rebalance_interval": 5,
+  "top_n": 3,
+  "target_exposure": 0.8,
+  "fee_rate": 0.001,
+  "slippage": 0.0005,
+  "use_risk_manager": true
+}
+
