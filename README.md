@@ -2,6 +2,12 @@
 
 AI Invest Quant is an MVP for researching AI-assisted investment quant workflows. It focuses on local CSV data, ETF rotation signals, backtesting, risk controls, performance metrics, and Markdown reports.
 
+## Project Docs
+
+- [Project Status](docs/PROJECT_STATUS.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Roadmap](docs/ROADMAP.md)
+
 ## Quick Start
 
 Run the built-in ETF rotation demo with the bundled sample data:
