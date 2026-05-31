@@ -263,6 +263,15 @@ When `auto_run_dir` is enabled, the project also maintains a run history index:
 
 The Dashboard shows this index in the `Run History` section.
 
+To inspect an older run without rerunning the backtest:
+
+1. Open the Dashboard.
+2. Make sure `Output Directory` points to the base directory that contains `runs/index.csv`.
+3. Use `Select historical run` in the `Run History` section.
+4. Click `Load Historical Run`.
+
+The Dashboard loads the selected run's `nav.csv`, `trades.csv`, `positions.csv`, `signals.csv`, `report.md`, and `metadata.json` from disk. It does not rerun the backtest. If any historical output file is missing, the Dashboard displays a clear missing-file warning and continues showing the files that are available.
+
 The same config can be used by the CLI:
 
 ```bash

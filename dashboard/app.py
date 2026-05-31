@@ -15,6 +15,7 @@ from ai_invest_quant.config.experiment_config import (
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
 from ai_invest_quant.report.run_index import load_run_index
+from ai_invest_quant.report.run_loader import load_historical_run
 
 
 DEFAULT_CSV_PATH = "data/samples/sample_etf_prices.csv"
@@ -119,6 +120,9 @@ def main() -> None:
             auto_run_dir=auto_run_dir,
         )
 
+    run_index_path = str(Path(output_dir) / "runs" / "index.csv")
+    _render_run_history(run_index_path)
+
     result = st.session_state.get("dashboard_result")
     if result is None:
         st.info("Set parameters in the sidebar and click Run Backtest.")
@@ -130,7 +134,6 @@ def main() -> None:
     _render_tables(result["positions"], result["trades"], result["signals"])
     _render_report(result["report"], result["output_paths"]["report"])
     _render_downloads(result["output_paths"])
-    _render_run_history(result["output_paths"].get("run_index"))
     _render_risk_disclaimer()
 
 
@@ -286,6 +289,22 @@ def _render_run_history(run_index_path: str | None) -> None:
         "actual_output_dir",
     ]
     st.dataframe(index[columns].head(20), use_container_width=True)
+    options = [
+        f"{row.run_time} | {row.run_id} | {row.actual_output_dir}"
+        for row in index.itertuples(index=False)
+    ]
+    selected = st.selectbox("Select historical run", options=options)
+    if st.button("Load Historical Run"):
+        actual_output_dir = selected.split(" | ", maxsplit=2)[-1]
+        historical_result = load_historical_run(actual_output_dir)
+        st.session_state["dashboard_result"] = historical_result
+        if historical_result["missing_files"]:
+            st.warning(
+                "Missing historical output files: "
+                + ", ".join(historical_result["missing_files"])
+            )
+        else:
+            st.success(f"Loaded historical run: {actual_output_dir}")
 
 
 def _render_risk_disclaimer() -> None:
