@@ -38,6 +38,7 @@ The project is intended for research, learning, and reproducible strategy experi
 - Historical run comparison
 - Benchmark comparison
 - Out-of-sample evaluation
+- Parameter sensitivity analysis
 
 ## Not Supported
 

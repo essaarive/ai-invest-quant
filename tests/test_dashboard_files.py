@@ -41,6 +41,12 @@ def test_dashboard_app_exists_and_contains_required_streamlit_content():
     assert "benchmark_nav.csv" in text
     assert "Out-of-sample ratio" in text
     assert "Out-of-Sample Evaluation" in text
+    assert "Parameter Sensitivity" in text
+    assert "Run Parameter Sensitivity" in text
+    assert "sensitivity_summary.csv" in text
+    assert "Top N values" in text
+    assert "Target exposure values" in text
+    assert "Rebalance interval values" in text
 
 
 def test_readme_documents_dashboard_command():

@@ -16,6 +16,7 @@ AI-assisted ETF rotation research MVP with backtesting, risk controls, benchmark
 - Compare strategy performance against a benchmark ETF
 - Evaluate in-sample vs out-of-sample performance
 - Track experiments with `metadata.json` and `runs/index.csv`
+- Run lightweight parameter sensitivity analysis
 - Explore results in a local Streamlit Dashboard
 
 ## Dashboard Preview
@@ -79,6 +80,7 @@ By default, demo outputs are written to `outputs/demo/`.
 | Benchmark | Strategy vs Benchmark comparison using a selected ETF symbol |
 | OOS | Out-of-Sample Evaluation by splitting the latest date range |
 | Experiments | JSON config, `metadata.json`, `auto_run_dir`, `runs/index.csv` |
+| Sensitivity | Batch run ETF rotation parameter combinations and save `sensitivity_summary.csv` |
 | Dashboard | CSV upload, output downloads, run history, historical run comparison |
 
 ## What Is Not Supported
@@ -277,6 +279,14 @@ ai-invest-quant run-demo --out-of-sample-ratio 0.3
 ```
 
 `out_of_sample_ratio` uses the last 30% of trading dates as the out-of-sample period. It does not change strategy signals, execution, or risk logic; it only evaluates the completed NAV results. Out-of-sample performance does not guarantee future returns.
+
+Parameter Sensitivity:
+
+The Dashboard can batch run multiple `top_n`, `target_exposure`, and `rebalance_interval`
+combinations. Each combination is saved as a separate timestamped experiment, and the aggregate
+results are written to `sensitivity_summary.csv`.
+
+This is for research stability checks only. It does not recommend investment parameters.
 
 This creates a directory similar to:
 

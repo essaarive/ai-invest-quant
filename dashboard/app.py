@@ -13,6 +13,7 @@ from ai_invest_quant.config.experiment_config import (
     save_experiment_config,
 )
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
+from ai_invest_quant.pipeline.sensitivity import run_parameter_sensitivity
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
 from ai_invest_quant.report.run_compare import load_runs_for_comparison
 from ai_invest_quant.report.run_index import load_run_index
@@ -143,6 +144,17 @@ def main() -> None:
 
     run_index_path = str(Path(output_dir) / "runs" / "index.csv")
     _render_run_history(run_index_path)
+    _render_parameter_sensitivity(
+        csv_path=csv_path,
+        uploaded_csv=uploaded_csv,
+        output_dir=output_dir,
+        initial_cash=initial_cash,
+        fee_rate=fee_rate,
+        slippage=slippage,
+        use_risk_manager=use_risk_manager,
+        benchmark_symbol=benchmark_symbol.strip() or None,
+        out_of_sample_ratio=out_of_sample_ratio,
+    )
 
     result = st.session_state.get("dashboard_result")
     if result is None:
@@ -210,6 +222,85 @@ def _run_dashboard_backtest(**kwargs) -> None:
         st.session_state["dashboard_result"] = run_etf_rotation_demo(**kwargs)
 
     st.success("Backtest completed")
+
+
+def _render_parameter_sensitivity(
+    csv_path: str,
+    uploaded_csv,
+    output_dir: str,
+    initial_cash: float,
+    fee_rate: float,
+    slippage: float,
+    use_risk_manager: bool,
+    benchmark_symbol: str | None,
+    out_of_sample_ratio: float,
+) -> None:
+    st.subheader("Parameter Sensitivity")
+    top_n_text = st.text_input("Top N values", value="1,2,3")
+    exposure_text = st.text_input("Target exposure values", value="0.5,0.8")
+    interval_text = st.text_input("Rebalance interval values", value="5,10")
+    if st.button("Run Parameter Sensitivity"):
+        try:
+            top_n_values = _parse_int_list(top_n_text)
+            target_exposure_values = _parse_float_list(exposure_text)
+            rebalance_interval_values = _parse_int_list(interval_text)
+            selected_csv_path = _resolve_csv_path(csv_path, uploaded_csv, output_dir)
+            if selected_csv_path is None:
+                return
+
+            with st.spinner("Running parameter sensitivity..."):
+                result = run_parameter_sensitivity(
+                    csv_path=selected_csv_path,
+                    output_dir=str(Path(output_dir) / "sensitivity"),
+                    top_n_values=top_n_values,
+                    target_exposure_values=target_exposure_values,
+                    rebalance_interval_values=rebalance_interval_values,
+                    initial_cash=initial_cash,
+                    fee_rate=fee_rate,
+                    slippage=slippage,
+                    use_risk_manager=use_risk_manager,
+                    benchmark_symbol=benchmark_symbol,
+                    out_of_sample_ratio=out_of_sample_ratio,
+                )
+            st.session_state["sensitivity_result"] = result
+            st.success("Parameter sensitivity completed")
+        except ValueError as exc:
+            st.error(str(exc))
+
+    sensitivity_result = st.session_state.get("sensitivity_result")
+    if sensitivity_result is None:
+        return
+
+    st.subheader("Sensitivity Summary")
+    st.dataframe(sensitivity_result["summary"], use_container_width=True)
+    summary_path = Path(sensitivity_result["summary_path"])
+    if summary_path.exists():
+        st.download_button(
+            label="Download sensitivity_summary.csv",
+            data=summary_path.read_bytes(),
+            file_name="sensitivity_summary.csv",
+            mime="text/csv",
+        )
+
+
+def _parse_int_list(value: str) -> list[int]:
+    try:
+        values = [int(item.strip()) for item in value.split(",") if item.strip()]
+    except ValueError as exc:
+        raise ValueError("Expected comma-separated integer values") from exc
+    if not values:
+        raise ValueError("Expected at least one integer value")
+    return values
+
+
+def _parse_float_list(value: str) -> list[float]:
+    try:
+        values = [float(item.strip()) for item in value.split(",") if item.strip()]
+    except ValueError as exc:
+        raise ValueError("Expected comma-separated numeric values") from exc
+    if not values:
+        raise ValueError("Expected at least one numeric value")
+    return values
 
 
 def _render_summary(summary: dict) -> None:

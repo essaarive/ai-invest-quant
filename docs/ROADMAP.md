@@ -22,6 +22,7 @@
 - Historical run comparison
 - Benchmark comparison
 - Out-of-sample evaluation
+- Parameter sensitivity analysis
 - Ruff lint and formatting configuration
 - GitHub Actions CI
 
@@ -33,7 +34,6 @@
 
 ## Mid-Term Roadmap
 
-- Parameter sensitivity analysis
 - Walk-forward testing
 - Multiple strategy interface
 - Transaction constraints

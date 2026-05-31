@@ -66,6 +66,8 @@ def test_demo_guide_contains_dashboard_and_history_comparison():
 
     assert "Run Dashboard" in text
     assert "Compare Historical Runs" in text
+    assert "Run Parameter Sensitivity" in text
+    assert "sensitivity_summary.csv" in text
     assert "assets/dashboard_overview.png" in text
     assert "assets/run_history.png" in text
     assert "assets/comparison_view.png" in text

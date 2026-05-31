@@ -104,6 +104,21 @@ The comparison shows metrics, config values, and normalized NAV curves.
 
 ![Historical run comparison](assets/comparison_view.png)
 
+## Run Parameter Sensitivity
+
+In the Dashboard:
+
+1. Open `Parameter Sensitivity`.
+2. Set `Top N values`, such as `1,2,3`.
+3. Set `Target exposure values`, such as `0.5,0.8`.
+4. Set `Rebalance interval values`, such as `5,10`.
+5. Click `Run Parameter Sensitivity`.
+6. Review the `Sensitivity Summary` table.
+7. Download `sensitivity_summary.csv`.
+
+Each parameter combination is saved as a separate timestamped historical experiment. The summary is
+for research stability checks only and is not an investment recommendation.
+
 ## Download Outputs
 
 After a run completes, the Dashboard can download:
