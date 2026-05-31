@@ -85,7 +85,7 @@ By default, demo outputs are written to `outputs/demo/`.
 | OOS | Out-of-Sample Evaluation by splitting the latest date range |
 | Experiments | JSON config, `metadata.json`, `auto_run_dir`, `runs/index.csv` |
 | Parameter Sensitivity Analysis | Batch run ETF rotation parameter combinations and save `sensitivity_summary.csv` |
-| Dashboard | CSV upload, output downloads, run history, historical run comparison |
+| Dashboard | English / 中文 labels, CSV upload, output downloads, run history, historical run comparison |
 
 ## What Is Not Supported
 

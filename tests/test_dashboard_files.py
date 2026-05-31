@@ -24,6 +24,17 @@ def test_dashboard_app_exists_and_contains_required_streamlit_content():
     assert "Load Config" in text
     assert "Save Config" in text
     assert "Run History" in text
+    assert "Language" in text
+    assert "English" in text
+    assert "中文" in text
+    assert "AI 投资量化研究仪表盘" in text
+    assert "运行回测" in text
+    assert "历史实验记录" in text
+    assert "对比历史实验" in text
+    assert "参数敏感性分析" in text
+    assert "核心绩效指标" in text
+    assert "样本外评估" in text
+    assert "基准对比" in text
     assert "No run history yet." in text
     assert "Select historical run" in text
     assert "Load Historical Run" in text
@@ -65,6 +76,7 @@ def test_readme_documents_dashboard_command():
     assert "auto_run_dir" in readme
     assert "benchmark_symbol" in readme or "Benchmark" in readme
     assert "out_of_sample_ratio" in readme
+    assert "English / 中文" in readme
 
 
 def test_streamlit_dependency_is_declared():

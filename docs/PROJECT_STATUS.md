@@ -27,6 +27,7 @@ The project is intended for research, learning, and reproducible strategy experi
 - Performance metrics
 - Markdown report
 - Streamlit Dashboard
+- English / 中文 Dashboard labels
 - CSV upload
 - Output downloads
 - JSON experiment config

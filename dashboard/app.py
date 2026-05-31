@@ -23,12 +23,53 @@ DEFAULT_CSV_PATH = "data/samples/sample_etf_prices.csv"
 DEFAULT_OUTPUT_DIR = "outputs/dashboard_demo"
 DEFAULT_CONFIG_PATH = "configs/demo_config.json"
 
+TRANSLATIONS = {
+    "AI Invest Quant Dashboard": "AI 投资量化研究仪表盘",
+    "Run Backtest": "运行回测",
+    "Run History": "历史实验记录",
+    "Select historical run": "选择历史实验",
+    "Load Historical Run": "加载历史实验",
+    "Compare Historical Runs": "对比历史实验",
+    "Select runs to compare": "选择要对比的实验",
+    "Compare Selected Runs": "对比选中的实验",
+    "Core Performance Metrics": "核心绩效指标",
+    "Out-of-Sample Evaluation": "样本外评估",
+    "Benchmark": "基准对比",
+    "Parameter Sensitivity": "参数敏感性分析",
+    "Run Parameter Sensitivity": "运行参数敏感性分析",
+    "Sensitivity Summary": "敏感性分析汇总",
+    "Download sensitivity_summary.csv": "下载 sensitivity_summary.csv",
+    "CSV Path": "CSV 路径",
+    "Output Directory": "输出目录",
+    "Initial Cash": "初始资金",
+    "Rebalance Interval": "调仓间隔",
+    "Top N": "持仓数量 Top N",
+    "Target Exposure": "目标仓位",
+    "Fee Rate": "手续费率",
+    "Slippage": "滑点",
+    "Use Risk Manager": "使用风控",
+    "Use auto run directory": "使用自动运行目录",
+    "Benchmark symbol": "基准标的代码",
+    "Out-of-sample ratio": "样本外比例",
+    "Top N values": "Top N 参数列表",
+    "Target exposure values": "目标仓位参数列表",
+    "Rebalance interval values": "调仓间隔参数列表",
+    "NAV": "净值曲线",
+    "Strategy vs Benchmark": "策略 vs 基准",
+    "Current Positions": "当前持仓",
+    "Recent Trades": "近期交易",
+    "Recent Signals": "近期信号",
+    "Markdown Report": "Markdown 报告",
+    "Download Outputs": "下载输出文件",
+}
+
 
 def main() -> None:
     st.set_page_config(page_title="AI Invest Quant Dashboard", layout="wide")
-    st.title("AI Invest Quant Dashboard")
 
     with st.sidebar:
+        language = st.selectbox("Language", options=["English", "中文"], index=0)
+        st.session_state["dashboard_language"] = language
         config = st.session_state.setdefault("experiment_config", dict(DEFAULT_EXPERIMENT_CONFIG))
         st.header("Experiment Config")
         config_path = st.text_input("Config JSON Path", value=DEFAULT_CONFIG_PATH)
@@ -42,56 +83,56 @@ def main() -> None:
                 st.error(str(exc))
 
         st.header("Backtest Parameters")
-        csv_path = st.text_input("CSV Path", value=config.get("csv_path", DEFAULT_CSV_PATH))
+        csv_path = st.text_input(t("CSV Path"), value=config.get("csv_path", DEFAULT_CSV_PATH))
         uploaded_csv = st.file_uploader("Upload ETF price CSV", type=["csv"])
         output_dir = st.text_input(
-            "Output Directory", value=config.get("output_dir", DEFAULT_OUTPUT_DIR)
+            t("Output Directory"), value=config.get("output_dir", DEFAULT_OUTPUT_DIR)
         )
         initial_cash = st.number_input(
-            "Initial Cash",
+            t("Initial Cash"),
             min_value=1.0,
             value=float(config.get("initial_cash", 1_000_000)),
             step=10_000.0,
         )
         rebalance_interval = st.number_input(
-            "Rebalance Interval",
+            t("Rebalance Interval"),
             min_value=1,
             value=int(config.get("rebalance_interval", 5)),
             step=1,
         )
-        top_n = st.number_input("Top N", min_value=1, value=int(config.get("top_n", 3)), step=1)
+        top_n = st.number_input(t("Top N"), min_value=1, value=int(config.get("top_n", 3)), step=1)
         target_exposure = st.slider(
-            "Target Exposure",
+            t("Target Exposure"),
             min_value=0.0,
             max_value=1.0,
             value=float(config.get("target_exposure", 0.8)),
             step=0.05,
         )
         fee_rate = st.number_input(
-            "Fee Rate",
+            t("Fee Rate"),
             min_value=0.0,
             value=float(config.get("fee_rate", 0.001)),
             step=0.0001,
             format="%.4f",
         )
         slippage = st.number_input(
-            "Slippage",
+            t("Slippage"),
             min_value=0.0,
             value=float(config.get("slippage", 0.0005)),
             step=0.0001,
             format="%.4f",
         )
         use_risk_manager = st.checkbox(
-            "Use Risk Manager", value=bool(config.get("use_risk_manager", True))
+            t("Use Risk Manager"), value=bool(config.get("use_risk_manager", True))
         )
         auto_run_dir = st.checkbox(
-            "Use auto run directory", value=bool(config.get("auto_run_dir", False))
+            t("Use auto run directory"), value=bool(config.get("auto_run_dir", False))
         )
         benchmark_symbol = st.text_input(
-            "Benchmark symbol", value=config.get("benchmark_symbol") or ""
+            t("Benchmark symbol"), value=config.get("benchmark_symbol") or ""
         )
         out_of_sample_ratio = st.number_input(
-            "Out-of-sample ratio",
+            t("Out-of-sample ratio"),
             min_value=0.0,
             max_value=0.99,
             value=float(config.get("out_of_sample_ratio", 0.3)),
@@ -120,7 +161,9 @@ def main() -> None:
             except ValueError as exc:
                 st.error(str(exc))
 
-        run_button = st.button("Run Backtest", type="primary")
+        run_button = st.button(t("Run Backtest"), type="primary")
+
+    st.title(t("AI Invest Quant Dashboard"))
 
     if run_button:
         selected_csv_path = _resolve_csv_path(csv_path, uploaded_csv, output_dir)
@@ -168,6 +211,13 @@ def main() -> None:
     _render_report(result["report"], result["output_paths"]["report"])
     _render_downloads(result["output_paths"])
     _render_risk_disclaimer()
+
+
+def t(key: str) -> str:
+    """Translate dashboard UI labels based on the selected sidebar language."""
+    if st.session_state.get("dashboard_language", "English") == "中文":
+        return TRANSLATIONS.get(key, key)
+    return key
 
 
 def _resolve_csv_path(csv_path: str, uploaded_csv, output_dir: str) -> str | None:
@@ -235,11 +285,11 @@ def _render_parameter_sensitivity(
     benchmark_symbol: str | None,
     out_of_sample_ratio: float,
 ) -> None:
-    st.subheader("Parameter Sensitivity")
-    top_n_text = st.text_input("Top N values", value="1,2,3")
-    exposure_text = st.text_input("Target exposure values", value="0.5,0.8")
-    interval_text = st.text_input("Rebalance interval values", value="5,10")
-    if st.button("Run Parameter Sensitivity"):
+    st.subheader(t("Parameter Sensitivity"))
+    top_n_text = st.text_input(t("Top N values"), value="1,2,3")
+    exposure_text = st.text_input(t("Target exposure values"), value="0.5,0.8")
+    interval_text = st.text_input(t("Rebalance interval values"), value="5,10")
+    if st.button(t("Run Parameter Sensitivity")):
         try:
             top_n_values = _parse_int_list(top_n_text)
             target_exposure_values = _parse_float_list(exposure_text)
@@ -271,12 +321,12 @@ def _render_parameter_sensitivity(
     if sensitivity_result is None:
         return
 
-    st.subheader("Sensitivity Summary")
+    st.subheader(t("Sensitivity Summary"))
     st.dataframe(sensitivity_result["summary"], use_container_width=True)
     summary_path = Path(sensitivity_result["summary_path"])
     if summary_path.exists():
         st.download_button(
-            label="Download sensitivity_summary.csv",
+            label=t("Download sensitivity_summary.csv"),
             data=summary_path.read_bytes(),
             file_name="sensitivity_summary.csv",
             mime="text/csv",
@@ -304,7 +354,7 @@ def _parse_float_list(value: str) -> list[float]:
 
 
 def _render_summary(summary: dict) -> None:
-    st.subheader("Core Performance Metrics")
+    st.subheader(t("Core Performance Metrics"))
     columns = st.columns(4)
     metrics = [
         ("Total Return", format_percentage(summary.get("total_return"))),
@@ -316,6 +366,7 @@ def _render_summary(summary: dict) -> None:
         ("Rebalance Win Rate", format_percentage(summary.get("rebalance_win_rate"))),
     ]
     if "benchmark_total_return" in summary:
+        st.subheader(t("Benchmark"))
         metrics.extend(
             [
                 (
@@ -333,7 +384,7 @@ def _render_summary(summary: dict) -> None:
         columns[index % len(columns)].metric(label, value)
 
     if "out_of_sample_total_return" in summary:
-        st.subheader("Out-of-Sample Evaluation")
+        st.subheader(t("Out-of-Sample Evaluation"))
         oos_columns = st.columns(4)
         oos_metrics = [
             ("Split Date", str(summary.get("split_date"))[:10]),
@@ -358,7 +409,7 @@ def _render_summary(summary: dict) -> None:
 
 
 def _render_charts(nav: pd.DataFrame, strategy_vs_benchmark: pd.DataFrame | None = None) -> None:
-    st.subheader("NAV")
+    st.subheader(t("NAV"))
     nav_chart = nav[["date", "nav"]].copy()
     nav_chart["date"] = pd.to_datetime(nav_chart["date"])
     st.line_chart(nav_chart.set_index("date")["nav"])
@@ -371,7 +422,7 @@ def _render_charts(nav: pd.DataFrame, strategy_vs_benchmark: pd.DataFrame | None
     else:
         st.info("Drawdown data is not available.")
 
-    st.subheader("Strategy vs Benchmark")
+    st.subheader(t("Strategy vs Benchmark"))
     if strategy_vs_benchmark is None or strategy_vs_benchmark.empty:
         st.info("Benchmark is not enabled.")
     else:
@@ -381,7 +432,7 @@ def _render_charts(nav: pd.DataFrame, strategy_vs_benchmark: pd.DataFrame | None
 
 
 def _render_tables(positions: pd.DataFrame, trades: pd.DataFrame, signals: pd.DataFrame) -> None:
-    st.subheader("Latest Positions")
+    st.subheader(t("Current Positions"))
     if positions.empty:
         st.write("No current positions")
     else:
@@ -392,13 +443,13 @@ def _render_tables(positions: pd.DataFrame, trades: pd.DataFrame, signals: pd.Da
             use_container_width=True,
         )
 
-    st.subheader("Recent Trades")
+    st.subheader(t("Recent Trades"))
     if trades.empty:
         st.write("No trades")
     else:
         st.dataframe(trades.tail(10), use_container_width=True)
 
-    st.subheader("Recent Signals")
+    st.subheader(t("Recent Signals"))
     if signals.empty:
         st.write("No signals")
     else:
@@ -406,13 +457,13 @@ def _render_tables(positions: pd.DataFrame, trades: pd.DataFrame, signals: pd.Da
 
 
 def _render_report(report: str, report_path: str) -> None:
-    st.subheader("Markdown Report")
+    st.subheader(t("Markdown Report"))
     st.caption(f"report.md path: {report_path}")
     st.markdown(report)
 
 
 def _render_downloads(output_paths: dict[str, str]) -> None:
-    st.subheader("Download Outputs")
+    st.subheader(t("Download Outputs"))
     downloads = [
         ("nav", "nav.csv", "text/csv"),
         ("trades", "trades.csv", "text/csv"),
@@ -439,7 +490,7 @@ def _render_downloads(output_paths: dict[str, str]) -> None:
 
 
 def _render_run_history(run_index_path: str | None) -> None:
-    st.subheader("Run History")
+    st.subheader(t("Run History"))
     if not run_index_path:
         st.info("No run history yet.")
         return
@@ -462,8 +513,8 @@ def _render_run_history(run_index_path: str | None) -> None:
         f"{row.run_time} | {row.run_id} | {row.actual_output_dir}"
         for row in index.itertuples(index=False)
     ]
-    selected = st.selectbox("Select historical run", options=options)
-    if st.button("Load Historical Run"):
+    selected = st.selectbox(t("Select historical run"), options=options)
+    if st.button(t("Load Historical Run")):
         actual_output_dir = selected.split(" | ", maxsplit=2)[-1]
         historical_result = load_historical_run(actual_output_dir)
         st.session_state["dashboard_result"] = historical_result
@@ -478,13 +529,13 @@ def _render_run_history(run_index_path: str | None) -> None:
 
 
 def _render_run_comparison(index: pd.DataFrame) -> None:
-    st.subheader("Compare Historical Runs")
+    st.subheader(t("Compare Historical Runs"))
     option_map = {
         _format_run_comparison_option(row): position
         for position, row in enumerate(index.itertuples(index=False))
     }
-    selected_options = st.multiselect("Select runs to compare", options=list(option_map))
-    if not st.button("Compare Selected Runs"):
+    selected_options = st.multiselect(t("Select runs to compare"), options=list(option_map))
+    if not st.button(t("Compare Selected Runs")):
         return
 
     if len(selected_options) < 2:
