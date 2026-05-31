@@ -1,55 +1,84 @@
 # AI Invest Quant
 
 [![CI](https://github.com/essaarive/ai-invest-quant/actions/workflows/ci.yml/badge.svg)](https://github.com/essaarive/ai-invest-quant/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![pytest](https://img.shields.io/badge/pytest-215%20passed-brightgreen)
+![Ruff](https://img.shields.io/badge/ruff-enabled-purple)
 
-AI Invest Quant is an MVP for researching AI-assisted investment quant workflows. It focuses on local CSV data, ETF rotation signals, backtesting, risk controls, performance metrics, and Markdown reports.
+AI-assisted ETF rotation research MVP with backtesting, risk controls, benchmark comparison, out-of-sample evaluation, experiment tracking, and Streamlit dashboard.
+
+## What This Project Does
+
+- Load local ETF OHLCV CSV data
+- Generate ETF rotation signals
+- Run historical backtests
+- Apply risk controls
+- Compare strategy performance against a benchmark ETF
+- Evaluate in-sample vs out-of-sample performance
+- Track experiments with `metadata.json` and `runs/index.csv`
+- Explore results in a local Streamlit Dashboard
+
+## Dashboard Preview
+
+Screenshots can be added under `docs/assets/` after running the dashboard.
 
 ## Project Docs
 
 - [Project Status](docs/PROJECT_STATUS.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)
+- [Demo Guide](docs/DEMO_GUIDE.md)
 
 ## Quick Start
 
-Run the built-in ETF rotation demo with the bundled sample data:
+Install development dependencies and run the built-in ETF rotation demo:
 
 ```bash
 pip install -e ".[dev]"
 ai-invest-quant run-demo
 ```
 
-By default, demo outputs are written to:
-
-```text
-outputs/demo/
-```
-
-Use a custom output directory:
+Open the local Dashboard:
 
 ```bash
-ai-invest-quant run-demo --output-dir /tmp/ai_invest_quant_demo
+streamlit run dashboard/app.py
 ```
 
-## Supported Features
+By default, demo outputs are written to `outputs/demo/`.
 
-- Local CSV loading, validation, cleaning, sorting, and symbol/date deduplication
-- MA20 / MA60 / MA120 trend indicators
-- Daily and 20-trading-day returns
-- ETF rotation target-weight signals
-- Basic open-price backtest execution with fees and slippage
-- Portfolio accounting and trade records
-- Optional risk manager with position, exposure, and drawdown mode controls
-- Performance summary metrics
-- Optional benchmark comparison against a selected ETF symbol
-- Out-of-sample evaluation by splitting the latest date range
-- Markdown backtest report generation
-- End-to-end ETF rotation demo pipeline
-- Local Streamlit Dashboard for demo backtest visualization
+## Typical Workflow
 
-## Not Supported
+1. Prepare ETF CSV data with `date,symbol,open,high,low,close,volume,amount`
+2. Run a backtest from the CLI or Dashboard
+3. Review the Markdown report and Dashboard charts
+4. Compare strategy performance with a benchmark ETF
+5. Check out-of-sample performance
+6. Compare historical runs from `runs/index.csv`
 
-This project does not support live trading, real broker connections, automatic order placement, external data pulling, Crypto, user login, or cloud deployment.
+## Key Features
+
+| Area | Capability |
+| --- | --- |
+| Data | Local CSV loading, validation, cleaning, sorting, and symbol/date deduplication |
+| Indicators | MA20 / MA60 / MA120, daily return, 20-trading-day return |
+| Strategy | ETF rotation target-weight signals |
+| Backtest | Next-open execution, fees, slippage, trades, positions, NAV |
+| Risk | Position cap, exposure cap, defensive mode based on drawdown |
+| Performance | Total return, drawdown, volatility, Sharpe, Calmar, turnover, win rate |
+| Benchmark | Strategy vs Benchmark comparison using a selected ETF symbol |
+| OOS | Out-of-Sample Evaluation by splitting the latest date range |
+| Experiments | JSON config, `metadata.json`, `auto_run_dir`, `runs/index.csv` |
+| Dashboard | CSV upload, output downloads, run history, historical run comparison |
+
+## What Is Not Supported
+
+- No live trading
+- No broker connection
+- No automatic order placement
+- No real-time data feed
+- No Crypto trading
+- No user accounts or cloud deployment
+- No investment advice
 
 ## CSV Data Format
 

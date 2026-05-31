@@ -7,6 +7,7 @@ def test_project_docs_exist():
     assert (PROJECT_ROOT / "docs" / "PROJECT_STATUS.md").exists()
     assert (PROJECT_ROOT / "docs" / "ARCHITECTURE.md").exists()
     assert (PROJECT_ROOT / "docs" / "ROADMAP.md").exists()
+    assert (PROJECT_ROOT / "docs" / "DEMO_GUIDE.md").exists()
 
 
 def test_project_status_contains_required_content():
@@ -34,3 +35,23 @@ def test_readme_links_to_project_docs():
     text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
 
     assert "docs/PROJECT_STATUS.md" in text
+    assert "docs/ARCHITECTURE.md" in text
+    assert "docs/ROADMAP.md" in text
+
+
+def test_readme_showcase_sections_exist():
+    text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "AI Invest Quant" in text
+    assert "Dashboard Preview" in text
+    assert "Typical Workflow" in text
+    assert "Benchmark" in text
+    assert "Out-of-Sample" in text
+    assert "What Is Not Supported" in text
+
+
+def test_demo_guide_contains_dashboard_and_history_comparison():
+    text = (PROJECT_ROOT / "docs" / "DEMO_GUIDE.md").read_text(encoding="utf-8")
+
+    assert "Run Dashboard" in text
+    assert "Compare Historical Runs" in text

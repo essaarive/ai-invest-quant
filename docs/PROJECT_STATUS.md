@@ -61,6 +61,12 @@ The project is intended for research, learning, and reproducible strategy experi
 - CI enabled with GitHub Actions
 - CI runs `ruff check` and `pytest`
 
+## GitHub Presentation Status
+
+- README optimized for project showcase
+- Dashboard preview placeholder included
+- Documentation links are available from the GitHub project front page
+
 ## Current Recommended Use
 
 - Local historical backtesting
