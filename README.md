@@ -1,5 +1,7 @@
 # AI Invest Quant
 
+[![CI](https://github.com/essaarive/ai-invest-quant/actions/workflows/ci.yml/badge.svg)](https://github.com/essaarive/ai-invest-quant/actions/workflows/ci.yml)
+
 AI Invest Quant is an MVP for researching AI-assisted investment quant workflows. It focuses on local CSV data, ETF rotation signals, backtesting, risk controls, performance metrics, and Markdown reports.
 
 ## Project Docs
@@ -121,6 +123,11 @@ ruff format .
 ```
 
 `pytest` verifies functional correctness. Ruff is used for code quality checks and formatting.
+
+CI runs on GitHub Actions for pushes and pull requests:
+
+- `ruff check .`
+- `python -m pytest`
 
 ## Run Demo Pipeline
 

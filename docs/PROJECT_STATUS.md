@@ -58,6 +58,8 @@ The project is intended for research, learning, and reproducible strategy experi
 - `pytest`
 - `ruff check`
 - `ruff format`
+- CI enabled with GitHub Actions
+- CI runs `ruff check` and `pytest`
 
 ## Current Recommended Use
 

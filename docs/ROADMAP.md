@@ -22,6 +22,7 @@
 - Benchmark comparison
 - Out-of-sample evaluation
 - Ruff lint and formatting configuration
+- GitHub Actions CI
 
 ## Short-Term Roadmap
 
@@ -29,7 +30,6 @@
 - Better benchmark visualization
 - Real ETF CSV adapter
 - More robust date handling if needed
-- GitHub Actions
 
 ## Mid-Term Roadmap
 
