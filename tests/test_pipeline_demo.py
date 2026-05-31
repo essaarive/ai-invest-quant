@@ -1,6 +1,6 @@
-from pathlib import Path
 import json
 import math
+from pathlib import Path
 
 import pandas as pd
 
@@ -89,9 +89,9 @@ def test_demo_pipeline_writes_metadata_json_with_config_summary_and_paths(tmp_pa
         metadata = json.load(file)
 
     assert metadata_path.exists()
-    assert set(["project", "version", "strategy_name", "run_time", "config", "summary", "output_paths"]).issubset(
-        metadata
-    )
+    assert set(
+        ["project", "version", "strategy_name", "run_time", "config", "summary", "output_paths"]
+    ).issubset(metadata)
     assert metadata["project"] == "ai-invest-quant"
     assert metadata["version"] == __version__
     assert metadata["strategy_name"] == "ETF Rotation Strategy"
@@ -109,7 +109,14 @@ def test_demo_pipeline_writes_metadata_json_with_config_summary_and_paths(tmp_pa
         "benchmark_symbol": None,
         "out_of_sample_ratio": 0.3,
     }
-    assert set(metadata["output_paths"]) == {"nav", "trades", "positions", "signals", "report", "metadata"}
+    assert set(metadata["output_paths"]) == {
+        "nav",
+        "trades",
+        "positions",
+        "signals",
+        "report",
+        "metadata",
+    }
     assert metadata["output_paths"]["metadata"] == str(metadata_path)
     assert metadata["actual_output_dir"] == str(output_dir)
     assert set(

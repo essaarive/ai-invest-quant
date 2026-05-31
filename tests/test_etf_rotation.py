@@ -142,9 +142,15 @@ def test_execute_date_values_do_not_affect_signal_date_selection():
 
     changed = df.copy()
     execute_date = dates[1]
-    changed.loc[(changed["date"] == execute_date) & (changed["symbol"] == "ETF_A"), "return_20d"] = 99.0
-    changed.loc[(changed["date"] == execute_date) & (changed["symbol"] == "ETF_A"), "close"] = 1_000_000.0
-    changed.loc[(changed["date"] == execute_date) & (changed["symbol"] == "ETF_B"), "return_20d"] = -99.0
+    changed.loc[
+        (changed["date"] == execute_date) & (changed["symbol"] == "ETF_A"), "return_20d"
+    ] = 99.0
+    changed.loc[(changed["date"] == execute_date) & (changed["symbol"] == "ETF_A"), "close"] = (
+        1_000_000.0
+    )
+    changed.loc[
+        (changed["date"] == execute_date) & (changed["symbol"] == "ETF_B"), "return_20d"
+    ] = -99.0
     changed.loc[(changed["date"] == execute_date) & (changed["symbol"] == "ETF_B"), "close"] = 1.0
     updated = generate_etf_rotation_signals(changed)
 

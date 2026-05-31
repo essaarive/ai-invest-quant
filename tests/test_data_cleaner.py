@@ -28,4 +28,3 @@ def test_cleaner_parses_dates_sorts_deduplicates_and_resets_index():
     ]
     assert cleaned.loc[1, "close"] == 99.5
     assert cleaned.index.tolist() == [0, 1, 2]
-

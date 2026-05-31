@@ -125,10 +125,8 @@ def test_load_historical_run_output_paths_point_to_run_directory(tmp_path):
     result = load_historical_run(run_dir)
 
     for key in ["nav", "trades", "positions", "signals", "report", "metadata"]:
-        assert result["output_paths"][key] == str(run_dir / f"{key}.csv") or (
-            key == "report"
-            and result["output_paths"][key] == str(run_dir / "report.md")
-        ) or (
-            key == "metadata"
-            and result["output_paths"][key] == str(run_dir / "metadata.json")
+        assert (
+            result["output_paths"][key] == str(run_dir / f"{key}.csv")
+            or (key == "report" and result["output_paths"][key] == str(run_dir / "report.md"))
+            or (key == "metadata" and result["output_paths"][key] == str(run_dir / "metadata.json"))
         )

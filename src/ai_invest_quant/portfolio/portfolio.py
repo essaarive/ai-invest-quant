@@ -66,4 +66,3 @@ class Portfolio:
 
     def total_equity(self, price_map: dict[str, float]) -> float:
         return self.cash + self.total_position_value(price_map)
-

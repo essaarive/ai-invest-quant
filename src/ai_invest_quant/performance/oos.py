@@ -14,7 +14,9 @@ from ai_invest_quant.performance.metrics import (
 )
 
 
-def split_nav_in_out_sample(nav_df: pd.DataFrame, out_of_sample_ratio: float = 0.3) -> dict[str, Any]:
+def split_nav_in_out_sample(
+    nav_df: pd.DataFrame, out_of_sample_ratio: float = 0.3
+) -> dict[str, Any]:
     """Split NAV into in-sample and out-of-sample periods by date."""
     ratio = _validate_ratio(out_of_sample_ratio)
     nav = _prepare_nav(nav_df)

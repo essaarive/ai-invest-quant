@@ -7,7 +7,6 @@ import pandas as pd
 from ai_invest_quant.backtest.broker import execute_trade
 from ai_invest_quant.portfolio.portfolio import Portfolio
 
-
 PRICE_COLUMNS = ("date", "symbol", "open", "close")
 SIGNAL_COLUMNS = ("signal_date", "execute_date", "symbol", "target_weight")
 
@@ -39,8 +38,8 @@ def run_backtest(
 
     for current_date in trading_dates:
         daily_prices = prices[prices["date"] == current_date]
-        open_map = dict(zip(daily_prices["symbol"], daily_prices["open"]))
-        close_map = dict(zip(daily_prices["symbol"], daily_prices["close"]))
+        open_map = dict(zip(daily_prices["symbol"], daily_prices["open"], strict=True))
+        close_map = dict(zip(daily_prices["symbol"], daily_prices["close"], strict=True))
 
         if current_date in signals_by_execute_date:
             target_weights = _target_weights_from_signals(signals_by_execute_date[current_date])
@@ -152,7 +151,7 @@ def _prepare_signals(signals_df: pd.DataFrame) -> pd.DataFrame:
     if signals.duplicated(["execute_date", "symbol"]).any():
         raise ValueError("duplicate execute_date + symbol signals are not allowed")
 
-    for execute_date, group in signals.groupby("execute_date", sort=False):
+    for _execute_date, group in signals.groupby("execute_date", sort=False):
         has_cash = (group["symbol"] == Portfolio.CASH_SYMBOL).any()
         etf_group = group[group["symbol"] != Portfolio.CASH_SYMBOL]
 
@@ -187,7 +186,8 @@ def _rebalance(
     symbols = set(portfolio.positions) | set(target_weights)
     equity_before_trade = portfolio.total_equity(open_map)
     target_quantities = {
-        symbol: (equity_before_trade * target_weights.get(symbol, 0.0)) / _require_price(open_map, symbol, "open")
+        symbol: (equity_before_trade * target_weights.get(symbol, 0.0))
+        / _require_price(open_map, symbol, "open")
         for symbol in symbols
     }
 

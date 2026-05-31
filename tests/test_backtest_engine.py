@@ -64,7 +64,9 @@ def test_cash_signal_clears_positions_and_cash_never_enters_positions():
         ]
     )
 
-    _, trades, positions = run_backtest(prices, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0)
+    _, trades, positions = run_backtest(
+        prices, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0
+    )
 
     assert trades["side"].tolist() == ["buy", "sell"]
     assert trades.loc[1, "symbol"] == "ETF_A"
@@ -109,7 +111,9 @@ def test_buying_considers_fee_and_slippage_and_cash_is_not_negative():
         }
     )
 
-    nav, trades, _ = run_backtest(prices, signals, initial_cash=1000, fee_rate=0.001, slippage=0.0005)
+    nav, trades, _ = run_backtest(
+        prices, signals, initial_cash=1000, fee_rate=0.001, slippage=0.0005
+    )
 
     assert trades.loc[0, "quantity"] < 10
     assert (nav["cash"] >= -1e-8).all()
@@ -148,9 +152,19 @@ def test_output_columns_are_complete():
         }
     )
 
-    nav, trades, positions = run_backtest(prices, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0)
+    nav, trades, positions = run_backtest(
+        prices, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0
+    )
 
-    assert list(nav.columns) == ["date", "cash", "positions_value", "equity", "nav", "risk_mode", "drawdown"]
+    assert list(nav.columns) == [
+        "date",
+        "cash",
+        "positions_value",
+        "equity",
+        "nav",
+        "risk_mode",
+        "drawdown",
+    ]
     assert list(trades.columns) == [
         "trade_date",
         "symbol",
@@ -162,7 +176,14 @@ def test_output_columns_are_complete():
         "cash_after",
         "position_after",
     ]
-    assert list(positions.columns) == ["date", "symbol", "quantity", "close", "market_value", "weight"]
+    assert list(positions.columns) == [
+        "date",
+        "symbol",
+        "quantity",
+        "close",
+        "market_value",
+        "weight",
+    ]
 
 
 def test_changing_execute_date_close_does_not_change_trade_price_or_quantity():
@@ -175,11 +196,17 @@ def test_changing_execute_date_close_does_not_change_trade_price_or_quantity():
             "target_weight": [0.5],
         }
     )
-    _, baseline_trades, _ = run_backtest(prices, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0)
+    _, baseline_trades, _ = run_backtest(
+        prices, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0
+    )
 
     changed = prices.copy()
-    changed.loc[(changed["date"] == pd.Timestamp("2024-01-02")) & (changed["symbol"] == "ETF_A"), "close"] = 1_000_000
-    _, updated_trades, _ = run_backtest(changed, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0)
+    changed.loc[
+        (changed["date"] == pd.Timestamp("2024-01-02")) & (changed["symbol"] == "ETF_A"), "close"
+    ] = 1_000_000
+    _, updated_trades, _ = run_backtest(
+        changed, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0
+    )
 
     assert baseline_trades.loc[0, "price"] == updated_trades.loc[0, "price"]
     assert baseline_trades.loc[0, "quantity"] == updated_trades.loc[0, "quantity"]
@@ -195,11 +222,15 @@ def test_changing_future_prices_does_not_change_current_execute_trade():
             "target_weight": [0.5],
         }
     )
-    _, baseline_trades, _ = run_backtest(prices, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0)
+    _, baseline_trades, _ = run_backtest(
+        prices, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0
+    )
 
     changed = prices.copy()
     changed.loc[changed["date"] > pd.Timestamp("2024-01-02"), ["open", "close"]] = 1_000_000
-    _, updated_trades, _ = run_backtest(changed, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0)
+    _, updated_trades, _ = run_backtest(
+        changed, signals, initial_cash=1000, fee_rate=0.0, slippage=0.0
+    )
 
     assert baseline_trades.loc[0, "price"] == updated_trades.loc[0, "price"]
     assert baseline_trades.loc[0, "quantity"] == updated_trades.loc[0, "quantity"]
@@ -421,7 +452,9 @@ def test_daily_close_updates_risk_manager_state_and_nav_fields():
             "target_weight": [1.0],
         }
     )
-    risk_manager = RiskManager(max_position_weight=1.0, normal_max_exposure=1.0, defensive_max_exposure=0.3)
+    risk_manager = RiskManager(
+        max_position_weight=1.0, normal_max_exposure=1.0, defensive_max_exposure=0.3
+    )
 
     nav, _, _ = run_backtest(
         prices,

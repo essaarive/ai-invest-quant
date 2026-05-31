@@ -14,7 +14,6 @@ from ai_invest_quant.config.experiment_config import (
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SAMPLE_CSV = PROJECT_ROOT / "data" / "samples" / "sample_etf_prices.csv"
 DEFAULT_OUTPUT_DIR = "outputs/demo"
@@ -51,13 +50,26 @@ def build_parser() -> argparse.ArgumentParser:
     run_demo_parser.add_argument("--csv-path", default=None, help="Input CSV path.")
     run_demo_parser.add_argument("--output-dir", default=None, help="Output directory.")
     run_demo_parser.add_argument("--initial-cash", type=float, default=None, help="Initial cash.")
-    run_demo_parser.add_argument("--rebalance-interval", type=int, default=None, help="Rebalance interval in trading days.")
-    run_demo_parser.add_argument("--top-n", type=int, default=None, help="Number of symbols to select.")
-    run_demo_parser.add_argument("--target-exposure", type=float, default=None, help="Target ETF exposure.")
+    run_demo_parser.add_argument(
+        "--rebalance-interval", type=int, default=None, help="Rebalance interval in trading days."
+    )
+    run_demo_parser.add_argument(
+        "--top-n", type=int, default=None, help="Number of symbols to select."
+    )
+    run_demo_parser.add_argument(
+        "--target-exposure", type=float, default=None, help="Target ETF exposure."
+    )
     run_demo_parser.add_argument("--fee-rate", type=float, default=None, help="Trade fee rate.")
     run_demo_parser.add_argument("--slippage", type=float, default=None, help="Trade slippage.")
-    run_demo_parser.add_argument("--benchmark-symbol", default=None, help="Benchmark symbol to compare against.")
-    run_demo_parser.add_argument("--out-of-sample-ratio", type=float, default=None, help="Final-date ratio used for out-of-sample evaluation.")
+    run_demo_parser.add_argument(
+        "--benchmark-symbol", default=None, help="Benchmark symbol to compare against."
+    )
+    run_demo_parser.add_argument(
+        "--out-of-sample-ratio",
+        type=float,
+        default=None,
+        help="Final-date ratio used for out-of-sample evaluation.",
+    )
 
     risk_group = run_demo_parser.add_mutually_exclusive_group()
     risk_group.add_argument(
@@ -85,7 +97,9 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Write outputs directly to output_dir.",
     )
-    run_demo_parser.set_defaults(use_risk_manager=None, auto_run_dir=None, command_func=run_demo_command)
+    run_demo_parser.set_defaults(
+        use_risk_manager=None, auto_run_dir=None, command_func=run_demo_command
+    )
 
     return parser
 

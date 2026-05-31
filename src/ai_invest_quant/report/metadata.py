@@ -12,7 +12,6 @@ import pandas as pd
 
 from ai_invest_quant import __version__
 
-
 SUMMARY_KEYS = (
     "total_return",
     "annual_return",

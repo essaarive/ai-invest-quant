@@ -18,7 +18,6 @@ from ai_invest_quant.report.run_compare import load_runs_for_comparison
 from ai_invest_quant.report.run_index import load_run_index
 from ai_invest_quant.report.run_loader import load_historical_run
 
-
 DEFAULT_CSV_PATH = "data/samples/sample_etf_prices.csv"
 DEFAULT_OUTPUT_DIR = "outputs/dashboard_demo"
 DEFAULT_CONFIG_PATH = "configs/demo_config.json"
@@ -44,7 +43,9 @@ def main() -> None:
         st.header("Backtest Parameters")
         csv_path = st.text_input("CSV Path", value=config.get("csv_path", DEFAULT_CSV_PATH))
         uploaded_csv = st.file_uploader("Upload ETF price CSV", type=["csv"])
-        output_dir = st.text_input("Output Directory", value=config.get("output_dir", DEFAULT_OUTPUT_DIR))
+        output_dir = st.text_input(
+            "Output Directory", value=config.get("output_dir", DEFAULT_OUTPUT_DIR)
+        )
         initial_cash = st.number_input(
             "Initial Cash",
             min_value=1.0,
@@ -79,9 +80,15 @@ def main() -> None:
             step=0.0001,
             format="%.4f",
         )
-        use_risk_manager = st.checkbox("Use Risk Manager", value=bool(config.get("use_risk_manager", True)))
-        auto_run_dir = st.checkbox("Use auto run directory", value=bool(config.get("auto_run_dir", False)))
-        benchmark_symbol = st.text_input("Benchmark symbol", value=config.get("benchmark_symbol") or "")
+        use_risk_manager = st.checkbox(
+            "Use Risk Manager", value=bool(config.get("use_risk_manager", True))
+        )
+        auto_run_dir = st.checkbox(
+            "Use auto run directory", value=bool(config.get("auto_run_dir", False))
+        )
+        benchmark_symbol = st.text_input(
+            "Benchmark symbol", value=config.get("benchmark_symbol") or ""
+        )
         out_of_sample_ratio = st.number_input(
             "Out-of-sample ratio",
             min_value=0.0,
@@ -220,8 +227,14 @@ def _render_summary(summary: dict) -> None:
     if "benchmark_total_return" in summary:
         metrics.extend(
             [
-                ("Benchmark Total Return", format_percentage(summary.get("benchmark_total_return"))),
-                ("Benchmark Max Drawdown", format_percentage(summary.get("benchmark_max_drawdown"))),
+                (
+                    "Benchmark Total Return",
+                    format_percentage(summary.get("benchmark_total_return")),
+                ),
+                (
+                    "Benchmark Max Drawdown",
+                    format_percentage(summary.get("benchmark_max_drawdown")),
+                ),
                 ("Excess Total Return", format_percentage(summary.get("excess_total_return"))),
             ]
         )
@@ -236,9 +249,18 @@ def _render_summary(summary: dict) -> None:
             ("In-Sample Total Return", format_percentage(summary.get("in_sample_total_return"))),
             ("In-Sample Max Drawdown", format_percentage(summary.get("in_sample_max_drawdown"))),
             ("In-Sample Sharpe Ratio", format_number(summary.get("in_sample_sharpe_ratio"))),
-            ("Out-of-Sample Total Return", format_percentage(summary.get("out_of_sample_total_return"))),
-            ("Out-of-Sample Max Drawdown", format_percentage(summary.get("out_of_sample_max_drawdown"))),
-            ("Out-of-Sample Sharpe Ratio", format_number(summary.get("out_of_sample_sharpe_ratio"))),
+            (
+                "Out-of-Sample Total Return",
+                format_percentage(summary.get("out_of_sample_total_return")),
+            ),
+            (
+                "Out-of-Sample Max Drawdown",
+                format_percentage(summary.get("out_of_sample_max_drawdown")),
+            ),
+            (
+                "Out-of-Sample Sharpe Ratio",
+                format_number(summary.get("out_of_sample_sharpe_ratio")),
+            ),
         ]
         for index, (label, value) in enumerate(oos_metrics):
             oos_columns[index % len(oos_columns)].metric(label, value)
@@ -274,7 +296,10 @@ def _render_tables(positions: pd.DataFrame, trades: pd.DataFrame, signals: pd.Da
     else:
         latest_date = pd.to_datetime(positions["date"]).max()
         latest_positions = positions[pd.to_datetime(positions["date"]) == latest_date]
-        st.dataframe(latest_positions.sort_values("weight", ascending=False).head(10), use_container_width=True)
+        st.dataframe(
+            latest_positions.sort_values("weight", ascending=False).head(10),
+            use_container_width=True,
+        )
 
     st.subheader("Recent Trades")
     if trades.empty:
@@ -353,8 +378,7 @@ def _render_run_history(run_index_path: str | None) -> None:
         st.session_state["dashboard_result"] = historical_result
         if historical_result["missing_files"]:
             st.warning(
-                "Missing historical output files: "
-                + ", ".join(historical_result["missing_files"])
+                "Missing historical output files: " + ", ".join(historical_result["missing_files"])
             )
         else:
             st.success(f"Loaded historical run: {actual_output_dir}")

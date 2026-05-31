@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 DEFAULT_EXPERIMENT_CONFIG: dict[str, Any] = {
     "csv_path": "data/samples/sample_etf_prices.csv",
     "output_dir": "outputs/dashboard_demo",

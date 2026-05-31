@@ -18,4 +18,3 @@ def create_run_directory(base_output_dir: str | Path, now: datetime | None = Non
 
     candidate.mkdir(parents=True, exist_ok=False)
     return candidate
-

@@ -21,6 +21,7 @@
 - Historical run comparison
 - Benchmark comparison
 - Out-of-sample evaluation
+- Ruff lint and formatting configuration
 
 ## Short-Term Roadmap
 
@@ -28,7 +29,6 @@
 - Better benchmark visualization
 - Real ETF CSV adapter
 - More robust date handling if needed
-- Code formatting with Ruff / Black
 - GitHub Actions
 
 ## Mid-Term Roadmap

@@ -5,7 +5,6 @@ from pathlib import Path
 
 from ai_invest_quant.data.loader import load_csv
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SAMPLE_CSV = PROJECT_ROOT / "data" / "samples" / "sample_etf_prices.csv"
 RUN_DEMO_SCRIPT = PROJECT_ROOT / "scripts" / "run_demo.py"

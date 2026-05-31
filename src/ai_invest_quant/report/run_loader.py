@@ -8,7 +8,6 @@ from typing import Any
 
 import pandas as pd
 
-
 OUTPUT_FILES = {
     "nav": "nav.csv",
     "trades": "trades.csv",
@@ -51,7 +50,9 @@ def load_historical_run(actual_output_dir: str | Path) -> dict[str, Any]:
             output_paths[key] = metadata_output_paths[key]
 
     benchmark_nav = _read_optional_csv(output_paths.get("benchmark_nav"), "benchmark_nav")
-    strategy_vs_benchmark = _read_optional_csv(output_paths.get("strategy_vs_benchmark"), "strategy_vs_benchmark")
+    strategy_vs_benchmark = _read_optional_csv(
+        output_paths.get("strategy_vs_benchmark"), "strategy_vs_benchmark"
+    )
 
     return {
         "nav": nav,

@@ -1,2 +1,1 @@
 """Strategy signal generation modules."""
-

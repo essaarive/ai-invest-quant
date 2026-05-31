@@ -1,2 +1,1 @@
 """Backtest execution utilities."""
-

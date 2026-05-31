@@ -3,7 +3,6 @@ from pathlib import Path
 import ai_invest_quant
 import ai_invest_quant.cli as cli
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 

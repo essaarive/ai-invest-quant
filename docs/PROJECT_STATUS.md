@@ -53,6 +53,12 @@ The project is intended for research, learning, and reproducible strategy experi
 
 205 passed
 
+## Development Quality Checks
+
+- `pytest`
+- `ruff check`
+- `ruff format`
+
 ## Current Recommended Use
 
 - Local historical backtesting

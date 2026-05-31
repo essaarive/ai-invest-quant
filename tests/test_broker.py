@@ -74,4 +74,3 @@ def test_open_price_must_be_positive(open_price):
 
     with pytest.raises(ValueError, match="open_price must be > 0"):
         execute_trade(portfolio, "ETF_A", "buy", 1, open_price)
-

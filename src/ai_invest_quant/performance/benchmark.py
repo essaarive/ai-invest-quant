@@ -5,7 +5,9 @@ from __future__ import annotations
 import pandas as pd
 
 
-def build_benchmark_nav(price_df: pd.DataFrame, benchmark_symbol: str, initial_nav: float = 1.0) -> pd.DataFrame:
+def build_benchmark_nav(
+    price_df: pd.DataFrame, benchmark_symbol: str, initial_nav: float = 1.0
+) -> pd.DataFrame:
     """Build normalized benchmark NAV from one symbol's close prices."""
     required_columns = {"date", "symbol", "close"}
     missing = required_columns - set(price_df.columns)
@@ -52,7 +54,9 @@ def calculate_benchmark_summary(benchmark_nav_df: pd.DataFrame) -> dict[str, flo
     }
 
 
-def merge_strategy_benchmark_nav(nav_df: pd.DataFrame, benchmark_nav_df: pd.DataFrame) -> pd.DataFrame:
+def merge_strategy_benchmark_nav(
+    nav_df: pd.DataFrame, benchmark_nav_df: pd.DataFrame
+) -> pd.DataFrame:
     """Merge strategy NAV and benchmark NAV by date for charting."""
     if "date" not in nav_df.columns or "equity" not in nav_df.columns:
         raise ValueError("nav_df must contain date and equity")

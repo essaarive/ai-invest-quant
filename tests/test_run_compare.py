@@ -77,8 +77,22 @@ def write_run(
 
 def test_load_runs_for_comparison_loads_metrics_and_configs(tmp_path):
     rows = [
-        write_run(tmp_path / "runs" / "20260531_031530", total_return=0.1, annual_return=0.2, max_drawdown=-0.05, sharpe_ratio=1.2, top_n=3),
-        write_run(tmp_path / "runs" / "20260531_031531", total_return=0.2, annual_return=0.3, max_drawdown=-0.08, sharpe_ratio=1.5, top_n=2),
+        write_run(
+            tmp_path / "runs" / "20260531_031530",
+            total_return=0.1,
+            annual_return=0.2,
+            max_drawdown=-0.05,
+            sharpe_ratio=1.2,
+            top_n=3,
+        ),
+        write_run(
+            tmp_path / "runs" / "20260531_031531",
+            total_return=0.2,
+            annual_return=0.3,
+            max_drawdown=-0.08,
+            sharpe_ratio=1.5,
+            top_n=2,
+        ),
     ]
 
     result = load_runs_for_comparison(pd.DataFrame(rows))
@@ -91,8 +105,22 @@ def test_load_runs_for_comparison_loads_metrics_and_configs(tmp_path):
 
 def test_load_runs_for_comparison_generates_normalized_nav(tmp_path):
     rows = [
-        write_run(tmp_path / "runs" / "20260531_031530", total_return=0.1, annual_return=0.2, max_drawdown=-0.05, sharpe_ratio=1.2, top_n=3),
-        write_run(tmp_path / "runs" / "20260531_031531", total_return=0.2, annual_return=0.3, max_drawdown=-0.08, sharpe_ratio=1.5, top_n=2),
+        write_run(
+            tmp_path / "runs" / "20260531_031530",
+            total_return=0.1,
+            annual_return=0.2,
+            max_drawdown=-0.05,
+            sharpe_ratio=1.2,
+            top_n=3,
+        ),
+        write_run(
+            tmp_path / "runs" / "20260531_031531",
+            total_return=0.2,
+            annual_return=0.3,
+            max_drawdown=-0.08,
+            sharpe_ratio=1.5,
+            top_n=2,
+        ),
     ]
 
     result = load_runs_for_comparison(rows)
@@ -105,7 +133,14 @@ def test_load_runs_for_comparison_generates_normalized_nav(tmp_path):
 
 def test_load_runs_for_comparison_missing_nav_does_not_crash(tmp_path):
     rows = [
-        write_run(tmp_path / "runs" / "20260531_031530", total_return=0.1, annual_return=0.2, max_drawdown=-0.05, sharpe_ratio=1.2, top_n=3),
+        write_run(
+            tmp_path / "runs" / "20260531_031530",
+            total_return=0.1,
+            annual_return=0.2,
+            max_drawdown=-0.05,
+            sharpe_ratio=1.2,
+            top_n=3,
+        ),
         write_run(
             tmp_path / "runs" / "20260531_031531",
             total_return=0.2,

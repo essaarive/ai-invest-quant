@@ -57,9 +57,7 @@ class RiskManager:
             clipped[symbol] = min(weight, self.max_position_weight)
 
         max_exposure = (
-            self.defensive_max_exposure
-            if self.mode == self.DEFENSIVE
-            else self.normal_max_exposure
+            self.defensive_max_exposure if self.mode == self.DEFENSIVE else self.normal_max_exposure
         )
         total_weight = sum(clipped.values())
         if total_weight > max_exposure and total_weight > 0:

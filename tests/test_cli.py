@@ -1,11 +1,10 @@
-import os
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 import pandas as pd
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SAMPLE_CSV = PROJECT_ROOT / "data" / "samples" / "sample_etf_prices.csv"
@@ -65,7 +64,9 @@ def test_run_demo_with_config_succeeds(tmp_path):
     assert "Demo completed" in result.stdout
     assert_demo_outputs_exist(tmp_path / "outputs" / "dashboard_demo")
     assert (tmp_path / "outputs" / "dashboard_demo" / "benchmark_nav.csv").exists()
-    metadata = json.loads((tmp_path / "outputs" / "dashboard_demo" / "metadata.json").read_text(encoding="utf-8"))
+    metadata = json.loads(
+        (tmp_path / "outputs" / "dashboard_demo" / "metadata.json").read_text(encoding="utf-8")
+    )
     assert metadata["config"]["benchmark_symbol"] == "ETF_A"
 
 
@@ -73,7 +74,14 @@ def test_config_with_auto_run_dir_succeeds(tmp_path):
     output_dir = tmp_path / "auto_cli_outputs"
 
     result = run_cli(
-        ["run-demo", "--config", str(DEMO_CONFIG), "--output-dir", str(output_dir), "--auto-run-dir"],
+        [
+            "run-demo",
+            "--config",
+            str(DEMO_CONFIG),
+            "--output-dir",
+            str(output_dir),
+            "--auto-run-dir",
+        ],
         tmp_path,
     )
 
@@ -114,7 +122,14 @@ def test_no_risk_manager_overrides_config_true(tmp_path):
     output_dir = tmp_path / "no_risk_override"
 
     result = run_cli(
-        ["run-demo", "--config", str(DEMO_CONFIG), "--output-dir", str(output_dir), "--no-risk-manager"],
+        [
+            "run-demo",
+            "--config",
+            str(DEMO_CONFIG),
+            "--output-dir",
+            str(output_dir),
+            "--no-risk-manager",
+        ],
         tmp_path,
     )
 
@@ -131,7 +146,14 @@ def test_use_risk_manager_overrides_config_false(tmp_path):
     config_path.write_text(json.dumps(config), encoding="utf-8")
 
     result = run_cli(
-        ["run-demo", "--config", str(config_path), "--output-dir", str(output_dir), "--use-risk-manager"],
+        [
+            "run-demo",
+            "--config",
+            str(config_path),
+            "--output-dir",
+            str(output_dir),
+            "--use-risk-manager",
+        ],
         tmp_path,
     )
 
@@ -152,7 +174,9 @@ def test_custom_output_dir_succeeds(tmp_path):
 def test_run_demo_with_benchmark_symbol_succeeds(tmp_path):
     output_dir = tmp_path / "benchmark_demo"
 
-    result = run_cli(["run-demo", "--output-dir", str(output_dir), "--benchmark-symbol", "ETF_A"], tmp_path)
+    result = run_cli(
+        ["run-demo", "--output-dir", str(output_dir), "--benchmark-symbol", "ETF_A"], tmp_path
+    )
 
     assert result.returncode == 0
     assert (output_dir / "benchmark_nav.csv").exists()
@@ -163,7 +187,9 @@ def test_run_demo_with_benchmark_symbol_succeeds(tmp_path):
 def test_run_demo_with_out_of_sample_ratio_succeeds(tmp_path):
     output_dir = tmp_path / "oos_demo"
 
-    result = run_cli(["run-demo", "--output-dir", str(output_dir), "--out-of-sample-ratio", "0.3"], tmp_path)
+    result = run_cli(
+        ["run-demo", "--output-dir", str(output_dir), "--out-of-sample-ratio", "0.3"], tmp_path
+    )
 
     assert result.returncode == 0
     metadata = json.loads((output_dir / "metadata.json").read_text(encoding="utf-8"))
@@ -179,7 +205,15 @@ def test_out_of_sample_ratio_cli_overrides_config(tmp_path):
     config_path.write_text(json.dumps(config), encoding="utf-8")
 
     result = run_cli(
-        ["run-demo", "--config", str(config_path), "--output-dir", str(output_dir), "--out-of-sample-ratio", "0.2"],
+        [
+            "run-demo",
+            "--config",
+            str(config_path),
+            "--output-dir",
+            str(output_dir),
+            "--out-of-sample-ratio",
+            "0.2",
+        ],
         tmp_path,
     )
 
@@ -196,7 +230,15 @@ def test_config_benchmark_symbol_can_be_overridden(tmp_path):
     config_path.write_text(json.dumps(config), encoding="utf-8")
 
     result = run_cli(
-        ["run-demo", "--config", str(config_path), "--output-dir", str(output_dir), "--benchmark-symbol", "ETF_A"],
+        [
+            "run-demo",
+            "--config",
+            str(config_path),
+            "--output-dir",
+            str(output_dir),
+            "--benchmark-symbol",
+            "ETF_A",
+        ],
         tmp_path,
     )
 

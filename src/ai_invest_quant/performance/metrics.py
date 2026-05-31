@@ -7,7 +7,6 @@ import math
 import numpy as np
 import pandas as pd
 
-
 NAV_COLUMNS = ("date", "equity", "nav")
 TRADES_COLUMNS = ("trade_date", "trade_amount")
 SIGNALS_COLUMNS = ("execute_date",)
@@ -26,7 +25,9 @@ def calculate_annual_return(nav_df: pd.DataFrame, trading_days_per_year: int = 2
     if trading_days <= 0:
         return 0.0
 
-    return float((nav["nav"].iloc[-1] / nav["nav"].iloc[0]) ** (trading_days_per_year / trading_days) - 1)
+    return float(
+        (nav["nav"].iloc[-1] / nav["nav"].iloc[0]) ** (trading_days_per_year / trading_days) - 1
+    )
 
 
 def calculate_max_drawdown(nav_df: pd.DataFrame) -> float:

@@ -7,7 +7,6 @@ from typing import Any
 
 import pandas as pd
 
-
 PERCENTAGE_FIELDS = {
     "total_return",
     "annual_return",
@@ -164,13 +163,15 @@ def _has_benchmark_summary(summary: dict) -> bool:
 
 
 def _format_oos_summary(summary: dict) -> list[str]:
+    out_sample_total_return = format_percentage(summary.get("out_of_sample_total_return"))
+    out_sample_max_drawdown = format_percentage(summary.get("out_of_sample_max_drawdown"))
     return [
         f"- Split Date: {format_date(summary.get('split_date'))}",
         f"- In-Sample Total Return: {format_percentage(summary.get('in_sample_total_return'))}",
         f"- In-Sample Max Drawdown: {format_percentage(summary.get('in_sample_max_drawdown'))}",
         f"- In-Sample Sharpe Ratio: {format_number(summary.get('in_sample_sharpe_ratio'))}",
-        f"- Out-of-Sample Total Return: {format_percentage(summary.get('out_of_sample_total_return'))}",
-        f"- Out-of-Sample Max Drawdown: {format_percentage(summary.get('out_of_sample_max_drawdown'))}",
+        f"- Out-of-Sample Total Return: {out_sample_total_return}",
+        f"- Out-of-Sample Max Drawdown: {out_sample_max_drawdown}",
         f"- Out-of-Sample Sharpe Ratio: {format_number(summary.get('out_of_sample_sharpe_ratio'))}",
     ]
 

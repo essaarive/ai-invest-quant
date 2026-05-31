@@ -83,7 +83,9 @@ def run_etf_rotation_demo(
         benchmark_nav = build_benchmark_nav(data, benchmark_symbol)
         benchmark_summary = calculate_benchmark_summary(benchmark_nav)
         summary.update(benchmark_summary)
-        summary["excess_total_return"] = summary["total_return"] - benchmark_summary["benchmark_total_return"]
+        summary["excess_total_return"] = (
+            summary["total_return"] - benchmark_summary["benchmark_total_return"]
+        )
         strategy_vs_benchmark = merge_strategy_benchmark_nav(nav, benchmark_nav)
         output_paths["benchmark_nav"] = str(output_root / "benchmark_nav.csv")
         output_paths["strategy_vs_benchmark"] = str(output_root / "strategy_vs_benchmark.csv")

@@ -15,4 +15,3 @@ def load_csv(path: str | Path) -> pd.DataFrame:
     df = pd.read_csv(path)
     validate_market_data(df)
     return clean_market_data(df)
-

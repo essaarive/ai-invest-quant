@@ -61,4 +61,3 @@ def execute_trade(
         "cash_after": portfolio.cash,
         "position_after": portfolio.get_position(symbol),
     }
-

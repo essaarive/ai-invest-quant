@@ -7,7 +7,6 @@ from typing import Any
 
 import pandas as pd
 
-
 RUN_INDEX_COLUMNS = [
     "run_time",
     "run_id",

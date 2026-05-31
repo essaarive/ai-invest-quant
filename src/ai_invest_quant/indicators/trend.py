@@ -18,8 +18,12 @@ def add_moving_average(
 
     grouped_close = result.groupby("symbol", sort=False)["close"]
     for window in windows:
+        rolling_window = window
         result[f"ma{window}"] = grouped_close.transform(
-            lambda series: series.rolling(window=window, min_periods=window).mean()
+            lambda series, rolling_window=rolling_window: series.rolling(
+                window=rolling_window,
+                min_periods=rolling_window,
+            ).mean()
         )
 
     return result

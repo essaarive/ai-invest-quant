@@ -8,7 +8,6 @@ from typing import Any, Iterable
 
 import pandas as pd
 
-
 METRIC_COLUMNS = [
     "total_return",
     "annual_return",
@@ -31,7 +30,9 @@ CONFIG_COLUMNS = [
 ]
 
 
-def load_runs_for_comparison(selected_rows: pd.DataFrame | Iterable[dict[str, Any]]) -> dict[str, Any]:
+def load_runs_for_comparison(
+    selected_rows: pd.DataFrame | Iterable[dict[str, Any]],
+) -> dict[str, Any]:
     """Load metrics, configs, and normalized NAV series for selected historical runs.
 
     This function only reads local run output files and never reruns a backtest.
@@ -55,7 +56,9 @@ def load_runs_for_comparison(selected_rows: pd.DataFrame | Iterable[dict[str, An
     for row in rows.to_dict(orient="records"):
         metadata = _load_metadata(row)
         run_id = _run_id(row, metadata)
-        metric_rows.append(_comparison_row(run_id, METRIC_COLUMNS, row, metadata.get("summary", {})))
+        metric_rows.append(
+            _comparison_row(run_id, METRIC_COLUMNS, row, metadata.get("summary", {}))
+        )
         config_rows.append(_comparison_row(run_id, CONFIG_COLUMNS, row, metadata.get("config", {})))
 
         nav = _load_normalized_nav(row, metadata, run_id, missing_files)
@@ -136,7 +139,9 @@ def _nav_path(row: dict[str, Any], metadata: dict[str, Any]) -> Path | None:
     if path is not None:
         return path
 
-    actual_output_dir = _valid_path(row.get("actual_output_dir") or metadata.get("actual_output_dir"))
+    actual_output_dir = _valid_path(
+        row.get("actual_output_dir") or metadata.get("actual_output_dir")
+    )
     if actual_output_dir is None:
         return None
     return actual_output_dir / "nav.csv"
@@ -159,7 +164,9 @@ def _run_id(row: dict[str, Any], metadata: dict[str, Any]) -> str:
     if run_id is not None:
         return str(run_id)
 
-    actual_output_dir = _first_valid(row.get("actual_output_dir"), metadata.get("actual_output_dir"))
+    actual_output_dir = _first_valid(
+        row.get("actual_output_dir"), metadata.get("actual_output_dir")
+    )
     if actual_output_dir is not None:
         return Path(str(actual_output_dir)).name
     return "unknown"

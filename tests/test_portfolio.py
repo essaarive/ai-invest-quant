@@ -38,4 +38,3 @@ def test_cash_symbol_does_not_enter_positions():
 def test_obviously_negative_cash_raises_error():
     with pytest.raises(ValueError, match="cash cannot be negative"):
         Portfolio(cash=-1)
-

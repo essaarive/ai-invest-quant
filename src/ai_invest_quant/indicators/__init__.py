@@ -1,2 +1,1 @@
 """Indicator calculation utilities."""
-

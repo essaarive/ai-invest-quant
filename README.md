@@ -94,6 +94,34 @@ pip install -r requirements.txt
 PYTHONPATH=src python3 -m pytest
 ```
 
+## Development Checks
+
+Install development dependencies:
+
+```bash
+pip install -e ".[dev]"
+```
+
+Run tests:
+
+```bash
+python3 -m pytest
+```
+
+Run Ruff lint checks:
+
+```bash
+ruff check .
+```
+
+Run Ruff formatting:
+
+```bash
+ruff format .
+```
+
+`pytest` verifies functional correctness. Ruff is used for code quality checks and formatting.
+
 ## Run Demo Pipeline
 
 Use the bundled sample data:
