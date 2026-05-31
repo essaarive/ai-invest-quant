@@ -10,6 +10,12 @@ def test_project_docs_exist():
     assert (PROJECT_ROOT / "docs" / "DEMO_GUIDE.md").exists()
 
 
+def test_dashboard_screenshot_assets_exist():
+    assert (PROJECT_ROOT / "docs" / "assets" / "dashboard_overview.png").exists()
+    assert (PROJECT_ROOT / "docs" / "assets" / "run_history.png").exists()
+    assert (PROJECT_ROOT / "docs" / "assets" / "comparison_view.png").exists()
+
+
 def test_project_status_contains_required_content():
     text = (PROJECT_ROOT / "docs" / "PROJECT_STATUS.md").read_text(encoding="utf-8")
 
@@ -44,6 +50,9 @@ def test_readme_showcase_sections_exist():
 
     assert "AI Invest Quant" in text
     assert "Dashboard Preview" in text
+    assert "docs/assets/dashboard_overview.png" in text
+    assert "docs/assets/run_history.png" in text
+    assert "docs/assets/comparison_view.png" in text
     assert "Typical Workflow" in text
     assert "Benchmark" in text
     assert "Out-of-Sample" in text
@@ -55,3 +64,6 @@ def test_demo_guide_contains_dashboard_and_history_comparison():
 
     assert "Run Dashboard" in text
     assert "Compare Historical Runs" in text
+    assert "assets/dashboard_overview.png" in text
+    assert "assets/run_history.png" in text
+    assert "assets/comparison_view.png" in text

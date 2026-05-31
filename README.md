@@ -20,7 +20,17 @@ AI-assisted ETF rotation research MVP with backtesting, risk controls, benchmark
 
 ## Dashboard Preview
 
-Screenshots can be added under `docs/assets/` after running the dashboard.
+Dashboard overview:
+
+![Dashboard overview](docs/assets/dashboard_overview.png)
+
+Run history:
+
+![Run history](docs/assets/run_history.png)
+
+Historical run comparison:
+
+![Historical run comparison](docs/assets/comparison_view.png)
 
 ## Project Docs
 

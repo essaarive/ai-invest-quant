@@ -64,7 +64,7 @@ The project is intended for research, learning, and reproducible strategy experi
 ## GitHub Presentation Status
 
 - README optimized for project showcase
-- Dashboard preview placeholder included
+- Dashboard screenshots added
 - Documentation links are available from the GitHub project front page
 
 ## Current Recommended Use

@@ -29,6 +29,8 @@ streamlit run dashboard/app.py
 
 The Dashboard is local-only. It does not connect to brokers and does not place orders.
 
+![Dashboard overview](assets/dashboard_overview.png)
+
 ## Use CSV Upload
 
 Use `Upload ETF price CSV` in the sidebar to run the demo pipeline against your own local CSV.
@@ -87,6 +89,8 @@ In the Dashboard:
 
 Loading a historical run reads existing output files and does not rerun the backtest.
 
+![Run history](assets/run_history.png)
+
 ## Compare Historical Runs
 
 In the Dashboard:
@@ -97,6 +101,8 @@ In the Dashboard:
 4. Click `Compare Selected Runs`.
 
 The comparison shows metrics, config values, and normalized NAV curves.
+
+![Historical run comparison](assets/comparison_view.png)
 
 ## Download Outputs
 
