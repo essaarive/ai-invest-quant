@@ -8,6 +8,7 @@ def test_project_docs_exist():
     assert (PROJECT_ROOT / "docs" / "ARCHITECTURE.md").exists()
     assert (PROJECT_ROOT / "docs" / "ROADMAP.md").exists()
     assert (PROJECT_ROOT / "docs" / "DEMO_GUIDE.md").exists()
+    assert (PROJECT_ROOT / "docs" / "DATA_GUIDE.md").exists()
 
 
 def test_dashboard_screenshot_assets_exist():
@@ -43,6 +44,7 @@ def test_readme_links_to_project_docs():
     assert "docs/PROJECT_STATUS.md" in text
     assert "docs/ARCHITECTURE.md" in text
     assert "docs/ROADMAP.md" in text
+    assert "docs/DATA_GUIDE.md" in text
 
 
 def test_readme_showcase_sections_exist():
@@ -67,3 +69,10 @@ def test_demo_guide_contains_dashboard_and_history_comparison():
     assert "assets/dashboard_overview.png" in text
     assert "assets/run_history.png" in text
     assert "assets/comparison_view.png" in text
+
+
+def test_data_guide_documents_standard_schema_and_adapter():
+    text = (PROJECT_ROOT / "docs" / "DATA_GUIDE.md").read_text(encoding="utf-8")
+
+    assert "date,symbol,open,high,low,close,volume,amount" in text
+    assert "standardize_price_csv" in text

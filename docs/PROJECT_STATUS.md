@@ -17,6 +17,7 @@ The project is intended for research, learning, and reproducible strategy experi
 ## Supported Features
 
 - Local CSV data loading
+- ETF CSV data adapter
 - Data validation and cleaning
 - Trend and return indicators
 - ETF rotation signal generation

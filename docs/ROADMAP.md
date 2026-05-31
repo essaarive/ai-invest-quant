@@ -3,6 +3,7 @@
 ## Completed
 
 - Local CSV data loading, validation, cleaning, sorting, and deduplication
+- Real ETF CSV adapter
 - Moving average and return indicators
 - ETF rotation signal generation
 - Backtest engine
@@ -28,7 +29,6 @@
 
 - Dashboard polish
 - Better benchmark visualization
-- Real ETF CSV adapter
 - More robust date handling if needed
 
 ## Mid-Term Roadmap

@@ -38,6 +38,7 @@ Historical run comparison:
 - [Architecture](docs/ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Demo Guide](docs/DEMO_GUIDE.md)
+- [Data Guide](docs/DATA_GUIDE.md)
 
 ## Quick Start
 
@@ -69,7 +70,7 @@ By default, demo outputs are written to `outputs/demo/`.
 
 | Area | Capability |
 | --- | --- |
-| Data | Local CSV loading, validation, cleaning, sorting, and symbol/date deduplication |
+| Data | Local CSV loading, ETF CSV data adapter, validation, cleaning, sorting, and deduplication |
 | Indicators | MA20 / MA60 / MA120, daily return, 20-trading-day return |
 | Strategy | ETF rotation target-weight signals |
 | Backtest | Next-open execution, fees, slippage, trades, positions, NAV |
@@ -114,6 +115,9 @@ Rules:
 - `volume` and `amount` must be numeric and greater than or equal to 0.
 - `high` must be greater than or equal to `open`, `close`, and `low`.
 - `low` must be less than or equal to `open`, `close`, and `high`.
+
+The data adapter can standardize common Chinese and English ETF CSV exports into this format.
+See [Data Guide](docs/DATA_GUIDE.md) for examples.
 
 ## Install
 
