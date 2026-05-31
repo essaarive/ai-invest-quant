@@ -34,6 +34,7 @@ ai-invest-quant run-demo --output-dir /tmp/ai_invest_quant_demo
 - Optional risk manager with position, exposure, and drawdown mode controls
 - Performance summary metrics
 - Optional benchmark comparison against a selected ETF symbol
+- Out-of-sample evaluation by splitting the latest date range
 - Markdown backtest report generation
 - End-to-end ETF rotation demo pipeline
 - Local Streamlit Dashboard for demo backtest visualization
@@ -152,6 +153,7 @@ ai-invest-quant run-demo \
   --fee-rate 0.001 \
   --slippage 0.0005 \
   --benchmark-symbol ETF_A \
+  --out-of-sample-ratio 0.3 \
   --no-risk-manager
 ```
 
@@ -183,6 +185,14 @@ ai-invest-quant run-demo --benchmark-symbol ETF_A
 ```
 
 `benchmark_symbol` is used only as a local historical backtest comparison baseline. It does not represent future returns and does not create live orders.
+
+Out-of-Sample Evaluation:
+
+```bash
+ai-invest-quant run-demo --out-of-sample-ratio 0.3
+```
+
+`out_of_sample_ratio` uses the last 30% of trading dates as the out-of-sample period. It does not change strategy signals, execution, or risk logic; it only evaluates the completed NAV results. Out-of-sample performance does not guarantee future returns.
 
 This creates a directory similar to:
 
@@ -227,6 +237,7 @@ The Dashboard lets you configure the bundled demo backtest, run it locally, and 
 - Optional auto run directory naming to avoid overwriting old outputs
 - Run History browsing, single-run loading, and Compare Historical Runs for local historical outputs
 - Benchmark symbol input, Strategy vs Benchmark chart, and benchmark output downloads
+- Out-of-sample ratio input and Out-of-Sample Evaluation metrics
 
 By default, Dashboard outputs are written to:
 
@@ -254,7 +265,8 @@ The config is a local JSON file containing run parameters:
   "slippage": 0.0005,
   "use_risk_manager": true,
   "auto_run_dir": false,
-  "benchmark_symbol": "ETF_A"
+  "benchmark_symbol": "ETF_A",
+  "out_of_sample_ratio": 0.3
 }
 ```
 
@@ -296,6 +308,8 @@ To compare multiple historical runs without rerunning backtests:
 The comparison shows a metrics table, a config table, and a normalized NAV chart starting each selected run at 1.0. The data is loaded from local `index.csv`, `metadata.json`, and each run's `nav.csv`. Missing `nav.csv` files are reported clearly and do not stop the other selected runs from being displayed.
 
 The Dashboard sidebar also includes `Benchmark symbol`. If set, the run compares strategy NAV against that benchmark ETF using local CSV close prices. After the run, the Dashboard shows benchmark total return, benchmark max drawdown, excess total return, and a `Strategy vs Benchmark` chart. Benchmark output files can be downloaded with the other outputs.
+
+The sidebar also includes `Out-of-sample ratio`. A value such as `0.3` evaluates the last 30% of dates as the out-of-sample period and shows split date, in-sample return/drawdown/Sharpe, and out-of-sample return/drawdown/Sharpe in the `Out-of-Sample Evaluation` section. This is a local historical robustness check only, not an investment recommendation.
 
 The same config can be used by the CLI:
 

@@ -46,6 +46,7 @@ def test_run_demo_help_runs(tmp_path):
     assert "--config" in result.stdout
     assert "--auto-run-dir" in result.stdout
     assert "--benchmark-symbol" in result.stdout
+    assert "--out-of-sample-ratio" in result.stdout
     assert "--csv-path" in result.stdout
 
 
@@ -157,6 +158,34 @@ def test_run_demo_with_benchmark_symbol_succeeds(tmp_path):
     assert (output_dir / "benchmark_nav.csv").exists()
     assert (output_dir / "strategy_vs_benchmark.csv").exists()
     assert "Benchmark Total Return" in result.stdout
+
+
+def test_run_demo_with_out_of_sample_ratio_succeeds(tmp_path):
+    output_dir = tmp_path / "oos_demo"
+
+    result = run_cli(["run-demo", "--output-dir", str(output_dir), "--out-of-sample-ratio", "0.3"], tmp_path)
+
+    assert result.returncode == 0
+    metadata = json.loads((output_dir / "metadata.json").read_text(encoding="utf-8"))
+    assert metadata["config"]["out_of_sample_ratio"] == 0.3
+    assert "out_of_sample_total_return" in metadata["summary"]
+
+
+def test_out_of_sample_ratio_cli_overrides_config(tmp_path):
+    output_dir = tmp_path / "oos_override"
+    config_path = tmp_path / "oos_config.json"
+    config = json.loads(DEMO_CONFIG.read_text(encoding="utf-8"))
+    config["out_of_sample_ratio"] = 0.4
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+
+    result = run_cli(
+        ["run-demo", "--config", str(config_path), "--output-dir", str(output_dir), "--out-of-sample-ratio", "0.2"],
+        tmp_path,
+    )
+
+    assert result.returncode == 0
+    metadata = json.loads((output_dir / "metadata.json").read_text(encoding="utf-8"))
+    assert metadata["config"]["out_of_sample_ratio"] == 0.2
 
 
 def test_config_benchmark_symbol_can_be_overridden(tmp_path):

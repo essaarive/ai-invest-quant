@@ -9,5 +9,6 @@
   "slippage": 0.0005,
   "use_risk_manager": true,
   "auto_run_dir": false,
-  "benchmark_symbol": "ETF_A"
+  "benchmark_symbol": "ETF_A",
+  "out_of_sample_ratio": 0.3
 }

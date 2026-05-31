@@ -107,6 +107,7 @@ def test_demo_pipeline_writes_metadata_json_with_config_summary_and_paths(tmp_pa
         "use_risk_manager": False,
         "auto_run_dir": False,
         "benchmark_symbol": None,
+        "out_of_sample_ratio": 0.3,
     }
     assert set(metadata["output_paths"]) == {"nav", "trades", "positions", "signals", "report", "metadata"}
     assert metadata["output_paths"]["metadata"] == str(metadata_path)
@@ -120,9 +121,46 @@ def test_demo_pipeline_writes_metadata_json_with_config_summary_and_paths(tmp_pa
             "sharpe_ratio",
             "calmar_ratio",
             "rebalance_win_rate",
+            "in_sample_total_return",
+            "in_sample_max_drawdown",
+            "in_sample_sharpe_ratio",
+            "out_of_sample_total_return",
+            "out_of_sample_max_drawdown",
+            "out_of_sample_sharpe_ratio",
+            "split_date",
         ]
     ).issubset(metadata["summary"])
+    assert "Out-of-Sample Evaluation" in result["report"]
     assert_no_nan_or_infinity(metadata)
+
+
+def test_demo_pipeline_out_of_sample_ratio_zero_keeps_oos_disabled(tmp_path):
+    csv_path = tmp_path / "prices.csv"
+    output_dir = tmp_path / "no_oos_outputs"
+    make_demo_csv(csv_path)
+
+    result = run_etf_rotation_demo(csv_path, output_dir=output_dir, out_of_sample_ratio=0)
+
+    assert "out_of_sample_total_return" not in result["summary"]
+    assert "in_sample_total_return" not in result["summary"]
+    assert "Out-of-Sample Evaluation" not in result["report"]
+
+    with Path(result["output_paths"]["metadata"]).open("r", encoding="utf-8") as file:
+        metadata = json.load(file)
+
+    assert metadata["config"]["out_of_sample_ratio"] == 0.0
+
+
+def test_demo_pipeline_out_of_sample_ratio_adds_oos_summary(tmp_path):
+    csv_path = tmp_path / "prices.csv"
+    output_dir = tmp_path / "oos_outputs"
+    make_demo_csv(csv_path)
+
+    result = run_etf_rotation_demo(csv_path, output_dir=output_dir, out_of_sample_ratio=0.3)
+
+    assert "in_sample_total_return" in result["summary"]
+    assert "out_of_sample_total_return" in result["summary"]
+    assert "split_date" in result["summary"]
 
 
 def test_demo_pipeline_with_benchmark_writes_benchmark_outputs(tmp_path):

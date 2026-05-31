@@ -57,6 +57,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_demo_parser.add_argument("--fee-rate", type=float, default=None, help="Trade fee rate.")
     run_demo_parser.add_argument("--slippage", type=float, default=None, help="Trade slippage.")
     run_demo_parser.add_argument("--benchmark-symbol", default=None, help="Benchmark symbol to compare against.")
+    run_demo_parser.add_argument("--out-of-sample-ratio", type=float, default=None, help="Final-date ratio used for out-of-sample evaluation.")
 
     risk_group = run_demo_parser.add_mutually_exclusive_group()
     risk_group.add_argument(
@@ -105,6 +106,7 @@ def run_demo_command(args: argparse.Namespace) -> None:
         use_risk_manager=run_config["use_risk_manager"],
         auto_run_dir=run_config["auto_run_dir"],
         benchmark_symbol=run_config["benchmark_symbol"],
+        out_of_sample_ratio=run_config["out_of_sample_ratio"],
     )
 
     summary = result["summary"]
@@ -145,6 +147,7 @@ def _build_run_demo_config(args: argparse.Namespace) -> dict[str, object]:
         "use_risk_manager": args.use_risk_manager,
         "auto_run_dir": args.auto_run_dir,
         "benchmark_symbol": args.benchmark_symbol,
+        "out_of_sample_ratio": args.out_of_sample_ratio,
     }
     config.update({key: value for key, value in cli_values.items() if value is not None})
     config = validate_experiment_config(config)
@@ -180,6 +183,8 @@ def _validate_run_demo_config(config: dict[str, object]) -> None:
         raise ValueError("fee_rate must be >= 0")
     if config["slippage"] < 0:
         raise ValueError("slippage must be >= 0")
+    if config["out_of_sample_ratio"] < 0 or config["out_of_sample_ratio"] >= 1:
+        raise ValueError("out_of_sample_ratio must be >= 0 and < 1")
 
 
 if __name__ == "__main__":

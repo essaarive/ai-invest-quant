@@ -40,6 +40,8 @@ def test_dashboard_app_exists_and_contains_required_streamlit_content():
     assert "Benchmark symbol" in text
     assert "Strategy vs Benchmark" in text
     assert "benchmark_nav.csv" in text
+    assert "Out-of-sample ratio" in text
+    assert "Out-of-Sample Evaluation" in text
 
 
 def test_readme_documents_dashboard_command():
@@ -57,6 +59,7 @@ def test_readme_documents_dashboard_command():
     assert "Save Config" in readme
     assert "auto_run_dir" in readme
     assert "benchmark_symbol" in readme or "Benchmark" in readme
+    assert "out_of_sample_ratio" in readme
 
 
 def test_streamlit_dependency_is_declared():

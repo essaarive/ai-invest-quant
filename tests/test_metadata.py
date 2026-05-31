@@ -19,6 +19,13 @@ def test_build_metadata_contains_required_fields_and_sanitizes_nan_inf():
             "benchmark_total_return": 0.08,
             "benchmark_max_drawdown": -0.1,
             "excess_total_return": 0.02,
+            "in_sample_total_return": 0.12,
+            "in_sample_max_drawdown": -0.03,
+            "in_sample_sharpe_ratio": 1.1,
+            "out_of_sample_total_return": 0.04,
+            "out_of_sample_max_drawdown": -0.02,
+            "out_of_sample_sharpe_ratio": 0.8,
+            "split_date": "2024-04-01",
         },
         output_paths={"nav": "nav.csv"},
         run_time="2026-01-01T00:00:00",
@@ -34,6 +41,8 @@ def test_build_metadata_contains_required_fields_and_sanitizes_nan_inf():
     assert metadata["summary"]["benchmark_total_return"] == 0.08
     assert metadata["summary"]["benchmark_max_drawdown"] == -0.1
     assert metadata["summary"]["excess_total_return"] == 0.02
+    assert metadata["summary"]["out_of_sample_total_return"] == 0.04
+    assert metadata["summary"]["split_date"] == "2024-04-01"
 
 
 def test_write_metadata_outputs_valid_json(tmp_path):

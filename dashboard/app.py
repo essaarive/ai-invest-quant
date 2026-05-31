@@ -82,6 +82,14 @@ def main() -> None:
         use_risk_manager = st.checkbox("Use Risk Manager", value=bool(config.get("use_risk_manager", True)))
         auto_run_dir = st.checkbox("Use auto run directory", value=bool(config.get("auto_run_dir", False)))
         benchmark_symbol = st.text_input("Benchmark symbol", value=config.get("benchmark_symbol") or "")
+        out_of_sample_ratio = st.number_input(
+            "Out-of-sample ratio",
+            min_value=0.0,
+            max_value=0.99,
+            value=float(config.get("out_of_sample_ratio", 0.3)),
+            step=0.05,
+            format="%.2f",
+        )
         current_config = _build_experiment_config(
             csv_path=csv_path,
             output_dir=output_dir,
@@ -94,6 +102,7 @@ def main() -> None:
             use_risk_manager=use_risk_manager,
             auto_run_dir=auto_run_dir,
             benchmark_symbol=benchmark_symbol.strip() or None,
+            out_of_sample_ratio=out_of_sample_ratio,
         )
         if config_columns[1].button("Save Config"):
             try:
@@ -122,6 +131,7 @@ def main() -> None:
             use_risk_manager=use_risk_manager,
             auto_run_dir=auto_run_dir,
             benchmark_symbol=benchmark_symbol.strip() or None,
+            out_of_sample_ratio=out_of_sample_ratio,
         )
 
     run_index_path = str(Path(output_dir) / "runs" / "index.csv")
@@ -165,6 +175,7 @@ def _build_experiment_config(
     use_risk_manager: bool,
     auto_run_dir: bool,
     benchmark_symbol: str | None,
+    out_of_sample_ratio: float,
 ) -> dict[str, object]:
     return {
         "csv_path": csv_path,
@@ -178,6 +189,7 @@ def _build_experiment_config(
         "use_risk_manager": use_risk_manager,
         "auto_run_dir": auto_run_dir,
         "benchmark_symbol": benchmark_symbol,
+        "out_of_sample_ratio": out_of_sample_ratio,
     }
 
 
@@ -215,6 +227,21 @@ def _render_summary(summary: dict) -> None:
         )
     for index, (label, value) in enumerate(metrics):
         columns[index % len(columns)].metric(label, value)
+
+    if "out_of_sample_total_return" in summary:
+        st.subheader("Out-of-Sample Evaluation")
+        oos_columns = st.columns(4)
+        oos_metrics = [
+            ("Split Date", str(summary.get("split_date"))[:10]),
+            ("In-Sample Total Return", format_percentage(summary.get("in_sample_total_return"))),
+            ("In-Sample Max Drawdown", format_percentage(summary.get("in_sample_max_drawdown"))),
+            ("In-Sample Sharpe Ratio", format_number(summary.get("in_sample_sharpe_ratio"))),
+            ("Out-of-Sample Total Return", format_percentage(summary.get("out_of_sample_total_return"))),
+            ("Out-of-Sample Max Drawdown", format_percentage(summary.get("out_of_sample_max_drawdown"))),
+            ("Out-of-Sample Sharpe Ratio", format_number(summary.get("out_of_sample_sharpe_ratio"))),
+        ]
+        for index, (label, value) in enumerate(oos_metrics):
+            oos_columns[index % len(oos_columns)].metric(label, value)
 
 
 def _render_charts(nav: pd.DataFrame, strategy_vs_benchmark: pd.DataFrame | None = None) -> None:

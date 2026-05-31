@@ -18,6 +18,7 @@ def test_default_demo_config_file_loads():
     assert config["use_risk_manager"] is True
     assert config["auto_run_dir"] is False
     assert config["benchmark_symbol"] == "ETF_A"
+    assert config["out_of_sample_ratio"] == 0.3
 
 
 def test_default_config_contains_auto_run_dir():
@@ -26,6 +27,10 @@ def test_default_config_contains_auto_run_dir():
 
 def test_default_config_contains_benchmark_symbol():
     assert DEFAULT_EXPERIMENT_CONFIG["benchmark_symbol"] is None
+
+
+def test_default_config_contains_out_of_sample_ratio():
+    assert DEFAULT_EXPERIMENT_CONFIG["out_of_sample_ratio"] == 0.3
 
 
 def test_validate_experiment_config_accepts_none_benchmark_symbol():
@@ -48,6 +53,20 @@ def test_validate_experiment_config_rejects_empty_benchmark_symbol():
 
     with pytest.raises(ValueError, match="benchmark_symbol must be None or a non-empty string"):
         validate_experiment_config(config)
+
+
+def test_validate_experiment_config_accepts_out_of_sample_ratio_number():
+    config = dict(DEFAULT_EXPERIMENT_CONFIG)
+    config["out_of_sample_ratio"] = 0.3
+
+    assert validate_experiment_config(config)["out_of_sample_ratio"] == 0.3
+
+
+def test_validate_experiment_config_accepts_out_of_sample_ratio_string():
+    config = dict(DEFAULT_EXPERIMENT_CONFIG)
+    config["out_of_sample_ratio"] = "0.3"
+
+    assert validate_experiment_config(config)["out_of_sample_ratio"] == 0.3
 
 
 def test_validate_experiment_config_accepts_auto_run_dir_bool():
@@ -93,6 +112,8 @@ def test_missing_required_field_raises_error():
         ("target_exposure", 1.1, "target_exposure must be >= 0 and <= 1"),
         ("fee_rate", -0.1, "fee_rate must be >= 0"),
         ("slippage", -0.1, "slippage must be >= 0"),
+        ("out_of_sample_ratio", -0.1, "out_of_sample_ratio must be >= 0 and < 1"),
+        ("out_of_sample_ratio", 1.0, "out_of_sample_ratio must be >= 0 and < 1"),
     ],
 )
 def test_invalid_config_values_raise_error(field, value, message):

@@ -14,6 +14,7 @@ from ai_invest_quant.performance.benchmark import (
     merge_strategy_benchmark_nav,
 )
 from ai_invest_quant.performance.metrics import calculate_performance_summary
+from ai_invest_quant.performance.oos import calculate_oos_summary
 from ai_invest_quant.report.markdown_report import generate_markdown_report
 from ai_invest_quant.report.metadata import write_metadata
 from ai_invest_quant.report.run_index import append_run_index
@@ -34,8 +35,10 @@ def run_etf_rotation_demo(
     use_risk_manager=True,
     auto_run_dir=False,
     benchmark_symbol=None,
+    out_of_sample_ratio=0.3,
 ) -> dict[str, object]:
     """Run the full ETF rotation demo pipeline from local CSV to report."""
+    out_of_sample_ratio = float(out_of_sample_ratio)
     output_root = create_run_directory(output_dir) if auto_run_dir else Path(output_dir)
     output_root.mkdir(parents=True, exist_ok=True)
     actual_output_dir = str(output_root)
@@ -63,6 +66,8 @@ def run_etf_rotation_demo(
     )
 
     summary = calculate_performance_summary(nav, trades_df=trades, signals_df=signals)
+    if out_of_sample_ratio > 0:
+        summary.update(calculate_oos_summary(nav, out_of_sample_ratio=out_of_sample_ratio))
 
     output_paths = {
         "nav": str(output_root / "nav.csv"),
@@ -115,6 +120,7 @@ def run_etf_rotation_demo(
         "use_risk_manager": use_risk_manager,
         "auto_run_dir": auto_run_dir,
         "benchmark_symbol": benchmark_symbol,
+        "out_of_sample_ratio": out_of_sample_ratio,
     }
     metadata = write_metadata(
         path=output_paths["metadata"],

@@ -18,6 +18,10 @@ PERCENTAGE_FIELDS = {
     "benchmark_total_return",
     "benchmark_max_drawdown",
     "excess_total_return",
+    "in_sample_total_return",
+    "in_sample_max_drawdown",
+    "out_of_sample_total_return",
+    "out_of_sample_max_drawdown",
 }
 
 
@@ -65,6 +69,10 @@ def generate_markdown_report(
     if benchmark_symbol is not None or _has_benchmark_summary(summary):
         lines.extend(["", "## Benchmark", ""])
         lines.extend(_format_benchmark_summary(summary, benchmark_symbol))
+
+    if _has_oos_summary(summary):
+        lines.extend(["", "## Out-of-Sample Evaluation", ""])
+        lines.extend(_format_oos_summary(summary))
 
     lines.extend(["", "## Risk Status Summary", ""])
     lines.extend(_format_risk_summary(nav_df))
@@ -151,6 +159,29 @@ def _has_benchmark_summary(summary: dict) -> bool:
             "benchmark_total_return",
             "benchmark_max_drawdown",
             "excess_total_return",
+        ]
+    )
+
+
+def _format_oos_summary(summary: dict) -> list[str]:
+    return [
+        f"- Split Date: {format_date(summary.get('split_date'))}",
+        f"- In-Sample Total Return: {format_percentage(summary.get('in_sample_total_return'))}",
+        f"- In-Sample Max Drawdown: {format_percentage(summary.get('in_sample_max_drawdown'))}",
+        f"- In-Sample Sharpe Ratio: {format_number(summary.get('in_sample_sharpe_ratio'))}",
+        f"- Out-of-Sample Total Return: {format_percentage(summary.get('out_of_sample_total_return'))}",
+        f"- Out-of-Sample Max Drawdown: {format_percentage(summary.get('out_of_sample_max_drawdown'))}",
+        f"- Out-of-Sample Sharpe Ratio: {format_number(summary.get('out_of_sample_sharpe_ratio'))}",
+    ]
+
+
+def _has_oos_summary(summary: dict) -> bool:
+    return any(
+        key in summary
+        for key in [
+            "in_sample_total_return",
+            "out_of_sample_total_return",
+            "split_date",
         ]
     )
 

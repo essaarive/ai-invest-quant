@@ -63,6 +63,25 @@ def test_report_contains_benchmark_section_when_enabled():
     assert "Excess Total Return: 2.34%" in report
 
 
+def test_report_contains_out_of_sample_section_when_enabled():
+    summary = make_summary() | {
+        "split_date": pd.Timestamp("2024-01-08"),
+        "in_sample_total_return": 0.12,
+        "in_sample_max_drawdown": -0.03,
+        "in_sample_sharpe_ratio": 1.1,
+        "out_of_sample_total_return": 0.04,
+        "out_of_sample_max_drawdown": -0.02,
+        "out_of_sample_sharpe_ratio": 0.8,
+    }
+
+    report = generate_markdown_report(summary)
+
+    assert "## Out-of-Sample Evaluation" in report
+    assert "Split Date: 2024-01-08" in report
+    assert "In-Sample Total Return: 12.00%" in report
+    assert "Out-of-Sample Total Return: 4.00%" in report
+
+
 def test_format_helpers_handle_nan_none_numbers_and_dates():
     assert format_percentage(math.nan) == "N/A"
     assert format_number(None) == "N/A"

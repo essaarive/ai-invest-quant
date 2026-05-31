@@ -19,6 +19,7 @@ DEFAULT_EXPERIMENT_CONFIG: dict[str, Any] = {
     "use_risk_manager": True,
     "auto_run_dir": False,
     "benchmark_symbol": None,
+    "out_of_sample_ratio": 0.3,
 }
 
 REQUIRED_FIELDS = tuple(DEFAULT_EXPERIMENT_CONFIG)
@@ -71,6 +72,11 @@ def validate_experiment_config(config: dict[str, Any]) -> dict[str, Any]:
             raise ValueError("benchmark_symbol must be None or a non-empty string")
         benchmark_symbol = benchmark_symbol.strip()
 
+    try:
+        out_of_sample_ratio = float(config["out_of_sample_ratio"])
+    except (TypeError, ValueError) as exc:
+        raise ValueError("out_of_sample_ratio must be >= 0 and < 1") from exc
+
     normalized = {
         "csv_path": str(config["csv_path"]),
         "output_dir": str(config["output_dir"]),
@@ -83,6 +89,7 @@ def validate_experiment_config(config: dict[str, Any]) -> dict[str, Any]:
         "use_risk_manager": config["use_risk_manager"],
         "auto_run_dir": config["auto_run_dir"],
         "benchmark_symbol": benchmark_symbol,
+        "out_of_sample_ratio": out_of_sample_ratio,
     }
 
     if normalized["initial_cash"] <= 0:
@@ -97,5 +104,7 @@ def validate_experiment_config(config: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("fee_rate must be >= 0")
     if normalized["slippage"] < 0:
         raise ValueError("slippage must be >= 0")
+    if normalized["out_of_sample_ratio"] < 0 or normalized["out_of_sample_ratio"] >= 1:
+        raise ValueError("out_of_sample_ratio must be >= 0 and < 1")
 
     return normalized

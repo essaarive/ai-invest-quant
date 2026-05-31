@@ -24,6 +24,13 @@ SUMMARY_KEYS = (
     "benchmark_total_return",
     "benchmark_max_drawdown",
     "excess_total_return",
+    "in_sample_total_return",
+    "in_sample_max_drawdown",
+    "in_sample_sharpe_ratio",
+    "out_of_sample_total_return",
+    "out_of_sample_max_drawdown",
+    "out_of_sample_sharpe_ratio",
+    "split_date",
 )
 
 
