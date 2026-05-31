@@ -28,6 +28,12 @@ def test_dashboard_app_exists_and_contains_required_streamlit_content():
     assert "No run history yet." in text
     assert "Select historical run" in text
     assert "Load Historical Run" in text
+    assert "Compare Historical Runs" in text
+    assert "Select runs to compare" in text
+    assert "Compare Selected Runs" in text
+    assert "Metrics Comparison" in text
+    assert "Config Comparison" in text
+    assert "NAV Comparison" in text
     assert "Missing historical output files" in text
     assert "Use auto run directory" in text
     assert "Actual output directory" in text
@@ -43,6 +49,7 @@ def test_readme_documents_dashboard_command():
     assert "metadata.json" in readme
     assert "index.csv" in readme
     assert "Load Historical Run" in readme
+    assert "Compare Historical Runs" in readme
     assert "Load Config" in readme
     assert "Save Config" in readme
     assert "auto_run_dir" in readme

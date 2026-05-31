@@ -14,6 +14,7 @@ from ai_invest_quant.config.experiment_config import (
 )
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
+from ai_invest_quant.report.run_compare import load_runs_for_comparison
 from ai_invest_quant.report.run_index import load_run_index
 from ai_invest_quant.report.run_loader import load_historical_run
 
@@ -305,6 +306,52 @@ def _render_run_history(run_index_path: str | None) -> None:
             )
         else:
             st.success(f"Loaded historical run: {actual_output_dir}")
+
+    _render_run_comparison(index)
+
+
+def _render_run_comparison(index: pd.DataFrame) -> None:
+    st.subheader("Compare Historical Runs")
+    option_map = {
+        _format_run_comparison_option(row): position
+        for position, row in enumerate(index.itertuples(index=False))
+    }
+    selected_options = st.multiselect("Select runs to compare", options=list(option_map))
+    if not st.button("Compare Selected Runs"):
+        return
+
+    if len(selected_options) < 2:
+        st.info("Please select at least 2 runs to compare.")
+        return
+    if len(selected_options) > 5:
+        st.info("Please select no more than 5 runs to compare.")
+        return
+
+    selected_positions = [option_map[option] for option in selected_options]
+    comparison = load_runs_for_comparison(index.iloc[selected_positions])
+    if comparison["missing_files"]:
+        st.warning("\n".join(comparison["missing_files"]))
+
+    st.subheader("Metrics Comparison")
+    st.dataframe(comparison["metrics"], use_container_width=True)
+
+    st.subheader("Config Comparison")
+    st.dataframe(comparison["configs"], use_container_width=True)
+
+    st.subheader("NAV Comparison")
+    if comparison["nav_comparison"].empty:
+        st.info("No NAV comparison data is available.")
+    else:
+        st.line_chart(comparison["nav_comparison"])
+
+
+def _format_run_comparison_option(row) -> str:
+    return (
+        f"{row.run_time} | {row.run_id} | "
+        f"{format_percentage(row.total_return)} | "
+        f"{format_percentage(row.max_drawdown)} | "
+        f"{format_number(row.sharpe_ratio)}"
+    )
 
 
 def _render_risk_disclaimer() -> None:

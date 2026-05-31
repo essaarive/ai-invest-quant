@@ -215,6 +215,7 @@ The Dashboard lets you configure the bundled demo backtest, run it locally, and 
 - Buttons to download output files
 - Local JSON experiment config save/load for reproducible runs
 - Optional auto run directory naming to avoid overwriting old outputs
+- Run History browsing, single-run loading, and Compare Historical Runs for local historical outputs
 
 By default, Dashboard outputs are written to:
 
@@ -271,6 +272,16 @@ To inspect an older run without rerunning the backtest:
 4. Click `Load Historical Run`.
 
 The Dashboard loads the selected run's `nav.csv`, `trades.csv`, `positions.csv`, `signals.csv`, `report.md`, and `metadata.json` from disk. It does not rerun the backtest. If any historical output file is missing, the Dashboard displays a clear missing-file warning and continues showing the files that are available.
+
+To compare multiple historical runs without rerunning backtests:
+
+1. Open the Dashboard.
+2. Make sure `Output Directory` points to the base directory that contains `runs/index.csv`.
+3. Use `Select runs to compare` in the `Compare Historical Runs` section.
+4. Select 2 to 5 historical runs.
+5. Click `Compare Selected Runs`.
+
+The comparison shows a metrics table, a config table, and a normalized NAV chart starting each selected run at 1.0. The data is loaded from local `index.csv`, `metadata.json`, and each run's `nav.csv`. Missing `nav.csv` files are reported clearly and do not stop the other selected runs from being displayed.
 
 The same config can be used by the CLI:
 
