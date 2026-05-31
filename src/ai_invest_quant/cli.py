@@ -12,11 +12,13 @@ from ai_invest_quant.config.experiment_config import (
     validate_experiment_config,
 )
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
+from ai_invest_quant.pipeline.sensitivity import run_parameter_sensitivity
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SAMPLE_CSV = PROJECT_ROOT / "data" / "samples" / "sample_etf_prices.csv"
 DEFAULT_OUTPUT_DIR = "outputs/demo"
+DEFAULT_SENSITIVITY_OUTPUT_DIR = "outputs/sensitivity"
 DEFAULT_RUN_DEMO_CONFIG = DEFAULT_EXPERIMENT_CONFIG | {
     "csv_path": str(DEFAULT_SAMPLE_CSV),
     "output_dir": DEFAULT_OUTPUT_DIR,
@@ -101,6 +103,49 @@ def build_parser() -> argparse.ArgumentParser:
         use_risk_manager=None, auto_run_dir=None, command_func=run_demo_command
     )
 
+    sensitivity_parser = subparsers.add_parser(
+        "run-sensitivity",
+        help="Run lightweight ETF rotation parameter sensitivity analysis.",
+    )
+    sensitivity_parser.add_argument(
+        "--csv-path", default=str(DEFAULT_SAMPLE_CSV), help="Input CSV path."
+    )
+    sensitivity_parser.add_argument(
+        "--output-dir", default=DEFAULT_SENSITIVITY_OUTPUT_DIR, help="Output directory."
+    )
+    sensitivity_parser.add_argument(
+        "--top-n-values", default="1,2,3", help="Comma-separated positive integers."
+    )
+    sensitivity_parser.add_argument(
+        "--target-exposure-values",
+        default="0.5,0.8",
+        help="Comma-separated exposure values in [0, 1].",
+    )
+    sensitivity_parser.add_argument(
+        "--rebalance-interval-values",
+        default="5,10",
+        help="Comma-separated positive integer rebalance intervals.",
+    )
+    sensitivity_parser.add_argument("--initial-cash", type=float, default=1_000_000)
+    sensitivity_parser.add_argument("--fee-rate", type=float, default=0.001)
+    sensitivity_parser.add_argument("--slippage", type=float, default=0.0005)
+    sensitivity_parser.add_argument("--benchmark-symbol", default=None)
+    sensitivity_parser.add_argument("--out-of-sample-ratio", type=float, default=0.3)
+    sensitivity_risk_group = sensitivity_parser.add_mutually_exclusive_group()
+    sensitivity_risk_group.add_argument(
+        "--use-risk-manager",
+        dest="use_risk_manager",
+        action="store_true",
+        help="Enable risk manager.",
+    )
+    sensitivity_risk_group.add_argument(
+        "--no-risk-manager",
+        dest="use_risk_manager",
+        action="store_false",
+        help="Disable risk manager.",
+    )
+    sensitivity_parser.set_defaults(use_risk_manager=True, command_func=run_sensitivity_command)
+
     return parser
 
 
@@ -142,6 +187,55 @@ def run_demo_command(args: argparse.Namespace) -> None:
         print(f"Benchmark Total Return: {format_percentage(summary.get('benchmark_total_return'))}")
         print(f"Benchmark Max Drawdown: {format_percentage(summary.get('benchmark_max_drawdown'))}")
         print(f"Excess Total Return: {format_percentage(summary.get('excess_total_return'))}")
+
+
+def run_sensitivity_command(args: argparse.Namespace) -> None:
+    """Validate arguments, run parameter sensitivity, and print summary location."""
+    csv_path = _resolve_csv_path(args.csv_path)
+    _validate_sensitivity_args(args, csv_path)
+    result = run_parameter_sensitivity(
+        csv_path=csv_path,
+        output_dir=args.output_dir,
+        top_n_values=parse_int_list(args.top_n_values),
+        target_exposure_values=parse_float_list(args.target_exposure_values),
+        rebalance_interval_values=parse_int_list(args.rebalance_interval_values),
+        initial_cash=args.initial_cash,
+        fee_rate=args.fee_rate,
+        slippage=args.slippage,
+        use_risk_manager=args.use_risk_manager,
+        benchmark_symbol=args.benchmark_symbol,
+        out_of_sample_ratio=args.out_of_sample_ratio,
+    )
+
+    print("Sensitivity analysis completed.")
+    print(f"Summary: {result['summary_path']}")
+    print(f"Runs: {len(result['runs'])}")
+
+
+def parse_int_list(value: str) -> list[int]:
+    """Parse comma-separated positive integers."""
+    if not value or not value.strip():
+        raise ValueError("Expected comma-separated positive integers")
+    try:
+        values = [int(item.strip()) for item in value.split(",") if item.strip()]
+    except ValueError as exc:
+        raise ValueError("Expected comma-separated positive integers") from exc
+    if not values or any(item <= 0 for item in values):
+        raise ValueError("Expected comma-separated positive integers")
+    return values
+
+
+def parse_float_list(value: str) -> list[float]:
+    """Parse comma-separated floats."""
+    if not value or not value.strip():
+        raise ValueError("Expected comma-separated numeric values")
+    try:
+        values = [float(item.strip()) for item in value.split(",") if item.strip()]
+    except ValueError as exc:
+        raise ValueError("Expected comma-separated numeric values") from exc
+    if not values:
+        raise ValueError("Expected comma-separated numeric values")
+    return values
 
 
 def _build_run_demo_config(args: argparse.Namespace) -> dict[str, object]:
@@ -199,6 +293,29 @@ def _validate_run_demo_config(config: dict[str, object]) -> None:
         raise ValueError("slippage must be >= 0")
     if config["out_of_sample_ratio"] < 0 or config["out_of_sample_ratio"] >= 1:
         raise ValueError("out_of_sample_ratio must be >= 0 and < 1")
+
+
+def _validate_sensitivity_args(args: argparse.Namespace, csv_path: Path) -> None:
+    if not csv_path.exists():
+        raise ValueError(f"csv_path does not exist: {csv_path}")
+    if args.initial_cash <= 0:
+        raise ValueError("initial_cash must be > 0")
+    if args.fee_rate < 0:
+        raise ValueError("fee_rate must be >= 0")
+    if args.slippage < 0:
+        raise ValueError("slippage must be >= 0")
+    if args.out_of_sample_ratio < 0 or args.out_of_sample_ratio >= 1:
+        raise ValueError("out_of_sample_ratio must be >= 0 and < 1")
+
+    top_n_values = parse_int_list(args.top_n_values)
+    target_exposure_values = parse_float_list(args.target_exposure_values)
+    rebalance_interval_values = parse_int_list(args.rebalance_interval_values)
+    if any(value < 0 or value > 1 for value in target_exposure_values):
+        raise ValueError("target_exposure_values must be >= 0 and <= 1")
+    if any(value <= 0 for value in top_n_values):
+        raise ValueError("top_n_values must be positive integers")
+    if any(value <= 0 for value in rebalance_interval_values):
+        raise ValueError("rebalance_interval_values must be positive integers")
 
 
 if __name__ == "__main__":

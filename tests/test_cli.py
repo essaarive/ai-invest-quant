@@ -36,6 +36,7 @@ def test_cli_help_runs(tmp_path):
 
     assert result.returncode == 0
     assert "run-demo" in result.stdout
+    assert "run-sensitivity" in result.stdout
 
 
 def test_run_demo_help_runs(tmp_path):
@@ -47,6 +48,15 @@ def test_run_demo_help_runs(tmp_path):
     assert "--benchmark-symbol" in result.stdout
     assert "--out-of-sample-ratio" in result.stdout
     assert "--csv-path" in result.stdout
+
+
+def test_run_sensitivity_help_runs(tmp_path):
+    result = run_cli(["run-sensitivity", "--help"], tmp_path)
+
+    assert result.returncode == 0
+    assert "--top-n-values" in result.stdout
+    assert "--target-exposure-values" in result.stdout
+    assert "--rebalance-interval-values" in result.stdout
 
 
 def test_default_run_demo_succeeds(tmp_path):
@@ -339,3 +349,86 @@ def test_custom_parameters_succeed(tmp_path):
 
     assert result.returncode == 0
     assert_demo_outputs_exist(output_dir)
+
+
+def test_run_sensitivity_default_parameters_succeed(tmp_path):
+    output_dir = tmp_path / "sensitivity_default"
+
+    result = run_cli(["run-sensitivity", "--output-dir", str(output_dir)], tmp_path)
+
+    assert result.returncode == 0
+    assert "Sensitivity analysis completed" in result.stdout
+    assert "Runs: 12" in result.stdout
+    assert (output_dir / "sensitivity_summary.csv").exists()
+
+
+def test_run_sensitivity_small_grid_succeeds(tmp_path):
+    output_dir = tmp_path / "sensitivity_small"
+
+    result = run_cli(
+        [
+            "run-sensitivity",
+            "--output-dir",
+            str(output_dir),
+            "--top-n-values",
+            "1,2",
+            "--target-exposure-values",
+            "0.5",
+            "--rebalance-interval-values",
+            "5",
+        ],
+        tmp_path,
+    )
+
+    assert result.returncode == 0
+    assert "Sensitivity analysis completed" in result.stdout
+    assert "Summary:" in result.stdout
+    assert "Runs: 2" in result.stdout
+    assert (output_dir / "sensitivity_summary.csv").exists()
+
+
+def test_run_sensitivity_invalid_top_n_returns_non_zero(tmp_path):
+    result = run_cli(["run-sensitivity", "--top-n-values", "abc"], tmp_path)
+
+    assert result.returncode != 0
+    assert "positive integers" in result.stderr
+
+
+def test_run_sensitivity_invalid_target_exposure_returns_non_zero(tmp_path):
+    result = run_cli(["run-sensitivity", "--target-exposure-values", "1.5"], tmp_path)
+
+    assert result.returncode != 0
+    assert "target_exposure_values" in result.stderr
+
+
+def test_run_sensitivity_invalid_rebalance_interval_returns_non_zero(tmp_path):
+    result = run_cli(["run-sensitivity", "--rebalance-interval-values", "0"], tmp_path)
+
+    assert result.returncode != 0
+    assert "positive integers" in result.stderr
+
+
+def test_run_sensitivity_with_benchmark_symbol_succeeds(tmp_path):
+    output_dir = tmp_path / "sensitivity_benchmark"
+
+    result = run_cli(
+        [
+            "run-sensitivity",
+            "--output-dir",
+            str(output_dir),
+            "--top-n-values",
+            "1",
+            "--target-exposure-values",
+            "0.5",
+            "--rebalance-interval-values",
+            "5",
+            "--benchmark-symbol",
+            "ETF_A",
+        ],
+        tmp_path,
+    )
+
+    assert result.returncode == 0
+    summary = pd.read_csv(output_dir / "sensitivity_summary.csv")
+    assert "benchmark_total_return" in summary.columns
+    assert summary["benchmark_total_return"].notna().all()

@@ -282,6 +282,16 @@ ai-invest-quant run-demo --out-of-sample-ratio 0.3
 
 Parameter Sensitivity:
 
+From the CLI:
+
+```bash
+ai-invest-quant run-sensitivity \
+  --top-n-values 1,2,3 \
+  --target-exposure-values 0.5,0.8 \
+  --rebalance-interval-values 5,10 \
+  --benchmark-symbol ETF_A
+```
+
 The Dashboard can batch run multiple `top_n`, `target_exposure`, and `rebalance_interval`
 combinations. Each combination is saved as a separate timestamped experiment, and the aggregate
 results are written to `sensitivity_summary.csv`.

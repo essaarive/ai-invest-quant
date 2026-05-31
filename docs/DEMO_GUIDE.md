@@ -106,6 +106,16 @@ The comparison shows metrics, config values, and normalized NAV curves.
 
 ## Run Parameter Sensitivity
 
+From the CLI:
+
+```bash
+ai-invest-quant run-sensitivity \
+  --top-n-values 1,2,3 \
+  --target-exposure-values 0.5,0.8 \
+  --rebalance-interval-values 5,10 \
+  --benchmark-symbol ETF_A
+```
+
 In the Dashboard:
 
 1. Open `Parameter Sensitivity`.
