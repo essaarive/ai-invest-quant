@@ -7,6 +7,6 @@
   "target_exposure": 0.8,
   "fee_rate": 0.001,
   "slippage": 0.0005,
-  "use_risk_manager": true
+  "use_risk_manager": true,
+  "auto_run_dir": false
 }
-

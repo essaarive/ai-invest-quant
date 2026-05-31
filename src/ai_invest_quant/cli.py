@@ -70,7 +70,20 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Disable risk manager.",
     )
-    run_demo_parser.set_defaults(use_risk_manager=None, command_func=run_demo_command)
+    auto_run_group = run_demo_parser.add_mutually_exclusive_group()
+    auto_run_group.add_argument(
+        "--auto-run-dir",
+        dest="auto_run_dir",
+        action="store_true",
+        help="Write outputs to output_dir/runs/YYYYMMDD_HHMMSS.",
+    )
+    auto_run_group.add_argument(
+        "--no-auto-run-dir",
+        dest="auto_run_dir",
+        action="store_false",
+        help="Write outputs directly to output_dir.",
+    )
+    run_demo_parser.set_defaults(use_risk_manager=None, auto_run_dir=None, command_func=run_demo_command)
 
     return parser
 
@@ -89,6 +102,7 @@ def run_demo_command(args: argparse.Namespace) -> None:
         fee_rate=run_config["fee_rate"],
         slippage=run_config["slippage"],
         use_risk_manager=run_config["use_risk_manager"],
+        auto_run_dir=run_config["auto_run_dir"],
     )
 
     summary = result["summary"]
@@ -119,6 +133,7 @@ def _build_run_demo_config(args: argparse.Namespace) -> dict[str, object]:
         "fee_rate": args.fee_rate,
         "slippage": args.slippage,
         "use_risk_manager": args.use_risk_manager,
+        "auto_run_dir": args.auto_run_dir,
     }
     config.update({key: value for key, value in cli_values.items() if value is not None})
     config = validate_experiment_config(config)

@@ -17,6 +17,7 @@ DEFAULT_EXPERIMENT_CONFIG: dict[str, Any] = {
     "fee_rate": 0.001,
     "slippage": 0.0005,
     "use_risk_manager": True,
+    "auto_run_dir": False,
 }
 
 REQUIRED_FIELDS = tuple(DEFAULT_EXPERIMENT_CONFIG)
@@ -57,6 +58,12 @@ def validate_experiment_config(config: dict[str, Any]) -> dict[str, Any]:
     if missing:
         raise ValueError(f"Missing required experiment config fields: {', '.join(missing)}")
 
+    if not isinstance(config["use_risk_manager"], bool):
+        raise ValueError("use_risk_manager must be a bool")
+
+    if not isinstance(config["auto_run_dir"], bool):
+        raise ValueError("auto_run_dir must be a bool")
+
     normalized = {
         "csv_path": str(config["csv_path"]),
         "output_dir": str(config["output_dir"]),
@@ -66,7 +73,8 @@ def validate_experiment_config(config: dict[str, Any]) -> dict[str, Any]:
         "target_exposure": float(config["target_exposure"]),
         "fee_rate": float(config["fee_rate"]),
         "slippage": float(config["slippage"]),
-        "use_risk_manager": bool(config["use_risk_manager"]),
+        "use_risk_manager": config["use_risk_manager"],
+        "auto_run_dir": config["auto_run_dir"],
     }
 
     if normalized["initial_cash"] <= 0:

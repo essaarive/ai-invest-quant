@@ -16,6 +16,26 @@ def test_default_demo_config_file_loads():
     assert config["csv_path"] == "data/samples/sample_etf_prices.csv"
     assert config["output_dir"] == "outputs/dashboard_demo"
     assert config["use_risk_manager"] is True
+    assert config["auto_run_dir"] is False
+
+
+def test_default_config_contains_auto_run_dir():
+    assert DEFAULT_EXPERIMENT_CONFIG["auto_run_dir"] is False
+
+
+def test_validate_experiment_config_accepts_auto_run_dir_bool():
+    config = dict(DEFAULT_EXPERIMENT_CONFIG)
+    config["auto_run_dir"] = True
+
+    assert validate_experiment_config(config)["auto_run_dir"] is True
+
+
+def test_validate_experiment_config_rejects_non_bool_auto_run_dir():
+    config = dict(DEFAULT_EXPERIMENT_CONFIG)
+    config["auto_run_dir"] = "true"
+
+    with pytest.raises(ValueError, match="auto_run_dir must be a bool"):
+        validate_experiment_config(config)
 
 
 def test_save_and_load_experiment_config_round_trip(tmp_path):

@@ -17,10 +17,16 @@ def test_dashboard_app_exists_and_contains_required_streamlit_content():
     assert "st.download_button" in text
     assert "Upload ETF price CSV" in text
     assert "Download Outputs" in text
+    assert "metadata.json" in text
     assert "load_experiment_config" in text
     assert "save_experiment_config" in text
+    assert "load_run_index" in text
     assert "Load Config" in text
     assert "Save Config" in text
+    assert "Run History" in text
+    assert "No run history yet." in text
+    assert "Use auto run directory" in text
+    assert "Actual output directory" in text
 
 
 def test_readme_documents_dashboard_command():
@@ -30,8 +36,11 @@ def test_readme_documents_dashboard_command():
     assert "CSV upload" in readme
     assert "download output files" in readme
     assert "configs/demo_config.json" in readme
+    assert "metadata.json" in readme
+    assert "index.csv" in readme
     assert "Load Config" in readme
     assert "Save Config" in readme
+    assert "auto_run_dir" in readme
 
 
 def test_streamlit_dependency_is_declared():

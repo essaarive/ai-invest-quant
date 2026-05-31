@@ -44,6 +44,7 @@ def test_run_demo_help_runs(tmp_path):
 
     assert result.returncode == 0
     assert "--config" in result.stdout
+    assert "--auto-run-dir" in result.stdout
     assert "--csv-path" in result.stdout
 
 
@@ -61,6 +62,20 @@ def test_run_demo_with_config_succeeds(tmp_path):
     assert result.returncode == 0
     assert "Demo completed" in result.stdout
     assert_demo_outputs_exist(tmp_path / "outputs" / "dashboard_demo")
+
+
+def test_config_with_auto_run_dir_succeeds(tmp_path):
+    output_dir = tmp_path / "auto_cli_outputs"
+
+    result = run_cli(
+        ["run-demo", "--config", str(DEMO_CONFIG), "--output-dir", str(output_dir), "--auto-run-dir"],
+        tmp_path,
+    )
+
+    assert result.returncode == 0
+    run_dirs = [path for path in (output_dir / "runs").iterdir() if path.is_dir()]
+    assert len(run_dirs) == 1
+    assert_demo_outputs_exist(run_dirs[0])
 
 
 def test_config_output_dir_can_be_overridden(tmp_path):

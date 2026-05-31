@@ -14,6 +14,7 @@ from ai_invest_quant.config.experiment_config import (
 )
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
+from ai_invest_quant.report.run_index import load_run_index
 
 
 DEFAULT_CSV_PATH = "data/samples/sample_etf_prices.csv"
@@ -77,6 +78,7 @@ def main() -> None:
             format="%.4f",
         )
         use_risk_manager = st.checkbox("Use Risk Manager", value=bool(config.get("use_risk_manager", True)))
+        auto_run_dir = st.checkbox("Use auto run directory", value=bool(config.get("auto_run_dir", False)))
         current_config = _build_experiment_config(
             csv_path=csv_path,
             output_dir=output_dir,
@@ -87,6 +89,7 @@ def main() -> None:
             fee_rate=fee_rate,
             slippage=slippage,
             use_risk_manager=use_risk_manager,
+            auto_run_dir=auto_run_dir,
         )
         if config_columns[1].button("Save Config"):
             try:
@@ -113,6 +116,7 @@ def main() -> None:
             fee_rate=fee_rate,
             slippage=slippage,
             use_risk_manager=use_risk_manager,
+            auto_run_dir=auto_run_dir,
         )
 
     result = st.session_state.get("dashboard_result")
@@ -121,10 +125,12 @@ def main() -> None:
         return
 
     _render_summary(result["summary"])
+    st.caption(f"Actual output directory: {result['actual_output_dir']}")
     _render_charts(result["nav"])
     _render_tables(result["positions"], result["trades"], result["signals"])
     _render_report(result["report"], result["output_paths"]["report"])
     _render_downloads(result["output_paths"])
+    _render_run_history(result["output_paths"].get("run_index"))
     _render_risk_disclaimer()
 
 
@@ -150,6 +156,7 @@ def _build_experiment_config(
     fee_rate: float,
     slippage: float,
     use_risk_manager: bool,
+    auto_run_dir: bool,
 ) -> dict[str, object]:
     return {
         "csv_path": csv_path,
@@ -161,6 +168,7 @@ def _build_experiment_config(
         "fee_rate": fee_rate,
         "slippage": slippage,
         "use_risk_manager": use_risk_manager,
+        "auto_run_dir": auto_run_dir,
     }
 
 
@@ -243,6 +251,7 @@ def _render_downloads(output_paths: dict[str, str]) -> None:
         ("positions", "positions.csv", "text/csv"),
         ("signals", "signals.csv", "text/csv"),
         ("report", "report.md", "text/markdown"),
+        ("metadata", "metadata.json", "application/json"),
     ]
     for key, file_name, mime in downloads:
         path = Path(output_paths[key])
@@ -255,6 +264,28 @@ def _render_downloads(output_paths: dict[str, str]) -> None:
             file_name=file_name,
             mime=mime,
         )
+
+
+def _render_run_history(run_index_path: str | None) -> None:
+    st.subheader("Run History")
+    if not run_index_path:
+        st.info("No run history yet.")
+        return
+
+    index = load_run_index(run_index_path)
+    if index.empty:
+        st.info("No run history yet.")
+        return
+
+    columns = [
+        "run_time",
+        "run_id",
+        "total_return",
+        "max_drawdown",
+        "sharpe_ratio",
+        "actual_output_dir",
+    ]
+    st.dataframe(index[columns].head(20), use_container_width=True)
 
 
 def _render_risk_disclaimer() -> None:

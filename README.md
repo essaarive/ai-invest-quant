@@ -168,6 +168,18 @@ ai-invest-quant run-demo \
   --output-dir outputs/config_test
 ```
 
+Automatic timestamped experiment directory:
+
+```bash
+ai-invest-quant run-demo --output-dir outputs --auto-run-dir
+```
+
+This creates a directory similar to:
+
+```text
+outputs/runs/20260531_031530/
+```
+
 Parameter priority is:
 
 ```text
@@ -202,6 +214,7 @@ The Dashboard lets you configure the bundled demo backtest, run it locally, and 
 - CSV upload for your own ETF price data
 - Buttons to download output files
 - Local JSON experiment config save/load for reproducible runs
+- Optional auto run directory naming to avoid overwriting old outputs
 
 By default, Dashboard outputs are written to:
 
@@ -227,11 +240,28 @@ The config is a local JSON file containing run parameters:
   "target_exposure": 0.8,
   "fee_rate": 0.001,
   "slippage": 0.0005,
-  "use_risk_manager": true
+  "use_risk_manager": true,
+  "auto_run_dir": false
 }
 ```
 
 Use `Load Config` in the sidebar to load parameters from a JSON file. Use `Save Config` to save the current Dashboard parameters for later reproduction.
+
+Set `auto_run_dir` to `true` or enable `Use auto run directory` in the sidebar to write outputs under:
+
+```text
+<output_dir>/runs/YYYYMMDD_HHMMSS/
+```
+
+If a run directory already exists in the same second, a suffix such as `_001` is appended.
+
+When `auto_run_dir` is enabled, the project also maintains a run history index:
+
+```text
+<output_dir>/runs/index.csv
+```
+
+The Dashboard shows this index in the `Run History` section.
 
 The same config can be used by the CLI:
 
@@ -254,6 +284,7 @@ After a run completes, the Dashboard provides download output files buttons for:
 - `positions.csv`
 - `signals.csv`
 - `report.md`
+- `metadata.json`
 
 The Dashboard only displays local historical backtest results. It does not connect to real brokers, does not download external data, does not place orders, and does not provide investment advice.
 
@@ -278,6 +309,48 @@ The demo pipeline writes:
 - `positions.csv`: daily position snapshots
 - `signals.csv`: ETF rotation target-weight signals
 - `report.md`: Markdown backtest report
+- `metadata.json`: run time, project version, experiment config snapshot, performance summary, and output file paths
+
+`metadata.json` is only for local historical backtest tracking. It does not contain broker keys, does not connect to real trading systems, and does not enable automatic order placement.
+
+Regular output:
+
+```bash
+ai-invest-quant run-demo --output-dir outputs/demo
+```
+
+Timestamped experiment output:
+
+```bash
+ai-invest-quant run-demo --output-dir outputs --auto-run-dir
+```
+
+This creates:
+
+```text
+outputs/runs/
+├── index.csv
+└── YYYYMMDD_HHMMSS/
+    ├── nav.csv
+    ├── trades.csv
+    ├── positions.csv
+    ├── signals.csv
+    ├── report.md
+    └── metadata.json
+```
+
+`index.csv` records each experiment run, including:
+
+- `run_time`
+- `run_id`
+- `actual_output_dir`
+- `total_return`
+- `max_drawdown`
+- `sharpe_ratio`
+- `metadata_path`
+- `report_path`
+
+`auto_run_dir` is only for local historical backtest archiving. It does not connect to real brokers, does not place orders, and does not provide investment advice.
 
 ## Risk Disclaimer
 
