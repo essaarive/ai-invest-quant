@@ -18,6 +18,7 @@ DEFAULT_EXPERIMENT_CONFIG: dict[str, Any] = {
     "slippage": 0.0005,
     "use_risk_manager": True,
     "auto_run_dir": False,
+    "benchmark_symbol": None,
 }
 
 REQUIRED_FIELDS = tuple(DEFAULT_EXPERIMENT_CONFIG)
@@ -64,6 +65,12 @@ def validate_experiment_config(config: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(config["auto_run_dir"], bool):
         raise ValueError("auto_run_dir must be a bool")
 
+    benchmark_symbol = config["benchmark_symbol"]
+    if benchmark_symbol is not None:
+        if not isinstance(benchmark_symbol, str) or not benchmark_symbol.strip():
+            raise ValueError("benchmark_symbol must be None or a non-empty string")
+        benchmark_symbol = benchmark_symbol.strip()
+
     normalized = {
         "csv_path": str(config["csv_path"]),
         "output_dir": str(config["output_dir"]),
@@ -75,6 +82,7 @@ def validate_experiment_config(config: dict[str, Any]) -> dict[str, Any]:
         "slippage": float(config["slippage"]),
         "use_risk_manager": config["use_risk_manager"],
         "auto_run_dir": config["auto_run_dir"],
+        "benchmark_symbol": benchmark_symbol,
     }
 
     if normalized["initial_cash"] <= 0:

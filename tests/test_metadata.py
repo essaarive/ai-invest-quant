@@ -16,6 +16,9 @@ def test_build_metadata_contains_required_fields_and_sanitizes_nan_inf():
             "sharpe_ratio": 1.2,
             "calmar_ratio": -math.inf,
             "rebalance_win_rate": 0.5,
+            "benchmark_total_return": 0.08,
+            "benchmark_max_drawdown": -0.1,
+            "excess_total_return": 0.02,
         },
         output_paths={"nav": "nav.csv"},
         run_time="2026-01-01T00:00:00",
@@ -28,6 +31,9 @@ def test_build_metadata_contains_required_fields_and_sanitizes_nan_inf():
     assert metadata["summary"]["annual_return"] is None
     assert metadata["summary"]["annual_volatility"] is None
     assert metadata["summary"]["calmar_ratio"] is None
+    assert metadata["summary"]["benchmark_total_return"] == 0.08
+    assert metadata["summary"]["benchmark_max_drawdown"] == -0.1
+    assert metadata["summary"]["excess_total_return"] == 0.02
 
 
 def test_write_metadata_outputs_valid_json(tmp_path):

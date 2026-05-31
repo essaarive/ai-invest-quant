@@ -56,6 +56,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_demo_parser.add_argument("--target-exposure", type=float, default=None, help="Target ETF exposure.")
     run_demo_parser.add_argument("--fee-rate", type=float, default=None, help="Trade fee rate.")
     run_demo_parser.add_argument("--slippage", type=float, default=None, help="Trade slippage.")
+    run_demo_parser.add_argument("--benchmark-symbol", default=None, help="Benchmark symbol to compare against.")
 
     risk_group = run_demo_parser.add_mutually_exclusive_group()
     risk_group.add_argument(
@@ -103,6 +104,7 @@ def run_demo_command(args: argparse.Namespace) -> None:
         slippage=run_config["slippage"],
         use_risk_manager=run_config["use_risk_manager"],
         auto_run_dir=run_config["auto_run_dir"],
+        benchmark_symbol=run_config["benchmark_symbol"],
     )
 
     summary = result["summary"]
@@ -112,10 +114,18 @@ def run_demo_command(args: argparse.Namespace) -> None:
     print(f"trades.csv: {output_paths['trades']}")
     print(f"positions.csv: {output_paths['positions']}")
     print(f"signals.csv: {output_paths['signals']}")
+    if "benchmark_nav" in output_paths:
+        print(f"benchmark_nav.csv: {output_paths['benchmark_nav']}")
+    if "strategy_vs_benchmark" in output_paths:
+        print(f"strategy_vs_benchmark.csv: {output_paths['strategy_vs_benchmark']}")
     print(f"report.md: {output_paths['report']}")
     print(f"Total Return: {format_percentage(summary.get('total_return'))}")
     print(f"Max Drawdown: {format_percentage(summary.get('max_drawdown'))}")
     print(f"Sharpe Ratio: {format_number(summary.get('sharpe_ratio'))}")
+    if "benchmark_total_return" in summary:
+        print(f"Benchmark Total Return: {format_percentage(summary.get('benchmark_total_return'))}")
+        print(f"Benchmark Max Drawdown: {format_percentage(summary.get('benchmark_max_drawdown'))}")
+        print(f"Excess Total Return: {format_percentage(summary.get('excess_total_return'))}")
 
 
 def _build_run_demo_config(args: argparse.Namespace) -> dict[str, object]:
@@ -134,6 +144,7 @@ def _build_run_demo_config(args: argparse.Namespace) -> dict[str, object]:
         "slippage": args.slippage,
         "use_risk_manager": args.use_risk_manager,
         "auto_run_dir": args.auto_run_dir,
+        "benchmark_symbol": args.benchmark_symbol,
     }
     config.update({key: value for key, value in cli_values.items() if value is not None})
     config = validate_experiment_config(config)

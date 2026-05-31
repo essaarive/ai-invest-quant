@@ -33,6 +33,7 @@ ai-invest-quant run-demo --output-dir /tmp/ai_invest_quant_demo
 - Portfolio accounting and trade records
 - Optional risk manager with position, exposure, and drawdown mode controls
 - Performance summary metrics
+- Optional benchmark comparison against a selected ETF symbol
 - Markdown backtest report generation
 - End-to-end ETF rotation demo pipeline
 - Local Streamlit Dashboard for demo backtest visualization
@@ -150,6 +151,7 @@ ai-invest-quant run-demo \
   --target-exposure 0.8 \
   --fee-rate 0.001 \
   --slippage 0.0005 \
+  --benchmark-symbol ETF_A \
   --no-risk-manager
 ```
 
@@ -173,6 +175,14 @@ Automatic timestamped experiment directory:
 ```bash
 ai-invest-quant run-demo --output-dir outputs --auto-run-dir
 ```
+
+Benchmark comparison:
+
+```bash
+ai-invest-quant run-demo --benchmark-symbol ETF_A
+```
+
+`benchmark_symbol` is used only as a local historical backtest comparison baseline. It does not represent future returns and does not create live orders.
 
 This creates a directory similar to:
 
@@ -216,6 +226,7 @@ The Dashboard lets you configure the bundled demo backtest, run it locally, and 
 - Local JSON experiment config save/load for reproducible runs
 - Optional auto run directory naming to avoid overwriting old outputs
 - Run History browsing, single-run loading, and Compare Historical Runs for local historical outputs
+- Benchmark symbol input, Strategy vs Benchmark chart, and benchmark output downloads
 
 By default, Dashboard outputs are written to:
 
@@ -242,7 +253,8 @@ The config is a local JSON file containing run parameters:
   "fee_rate": 0.001,
   "slippage": 0.0005,
   "use_risk_manager": true,
-  "auto_run_dir": false
+  "auto_run_dir": false,
+  "benchmark_symbol": "ETF_A"
 }
 ```
 
@@ -283,6 +295,8 @@ To compare multiple historical runs without rerunning backtests:
 
 The comparison shows a metrics table, a config table, and a normalized NAV chart starting each selected run at 1.0. The data is loaded from local `index.csv`, `metadata.json`, and each run's `nav.csv`. Missing `nav.csv` files are reported clearly and do not stop the other selected runs from being displayed.
 
+The Dashboard sidebar also includes `Benchmark symbol`. If set, the run compares strategy NAV against that benchmark ETF using local CSV close prices. After the run, the Dashboard shows benchmark total return, benchmark max drawdown, excess total return, and a `Strategy vs Benchmark` chart. Benchmark output files can be downloaded with the other outputs.
+
 The same config can be used by the CLI:
 
 ```bash
@@ -305,6 +319,8 @@ After a run completes, the Dashboard provides download output files buttons for:
 - `signals.csv`
 - `report.md`
 - `metadata.json`
+- `benchmark_nav.csv`
+- `strategy_vs_benchmark.csv`
 
 The Dashboard only displays local historical backtest results. It does not connect to real brokers, does not download external data, does not place orders, and does not provide investment advice.
 
@@ -330,6 +346,8 @@ The demo pipeline writes:
 - `signals.csv`: ETF rotation target-weight signals
 - `report.md`: Markdown backtest report
 - `metadata.json`: run time, project version, experiment config snapshot, performance summary, and output file paths
+- `benchmark_nav.csv`: normalized benchmark NAV for the selected `benchmark_symbol`
+- `strategy_vs_benchmark.csv`: strategy NAV and benchmark NAV aligned by date
 
 `metadata.json` is only for local historical backtest tracking. It does not contain broker keys, does not connect to real trading systems, and does not enable automatic order placement.
 

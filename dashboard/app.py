@@ -81,6 +81,7 @@ def main() -> None:
         )
         use_risk_manager = st.checkbox("Use Risk Manager", value=bool(config.get("use_risk_manager", True)))
         auto_run_dir = st.checkbox("Use auto run directory", value=bool(config.get("auto_run_dir", False)))
+        benchmark_symbol = st.text_input("Benchmark symbol", value=config.get("benchmark_symbol") or "")
         current_config = _build_experiment_config(
             csv_path=csv_path,
             output_dir=output_dir,
@@ -92,6 +93,7 @@ def main() -> None:
             slippage=slippage,
             use_risk_manager=use_risk_manager,
             auto_run_dir=auto_run_dir,
+            benchmark_symbol=benchmark_symbol.strip() or None,
         )
         if config_columns[1].button("Save Config"):
             try:
@@ -119,6 +121,7 @@ def main() -> None:
             slippage=slippage,
             use_risk_manager=use_risk_manager,
             auto_run_dir=auto_run_dir,
+            benchmark_symbol=benchmark_symbol.strip() or None,
         )
 
     run_index_path = str(Path(output_dir) / "runs" / "index.csv")
@@ -131,7 +134,7 @@ def main() -> None:
 
     _render_summary(result["summary"])
     st.caption(f"Actual output directory: {result['actual_output_dir']}")
-    _render_charts(result["nav"])
+    _render_charts(result["nav"], result.get("strategy_vs_benchmark"))
     _render_tables(result["positions"], result["trades"], result["signals"])
     _render_report(result["report"], result["output_paths"]["report"])
     _render_downloads(result["output_paths"])
@@ -161,6 +164,7 @@ def _build_experiment_config(
     slippage: float,
     use_risk_manager: bool,
     auto_run_dir: bool,
+    benchmark_symbol: str | None,
 ) -> dict[str, object]:
     return {
         "csv_path": csv_path,
@@ -173,6 +177,7 @@ def _build_experiment_config(
         "slippage": slippage,
         "use_risk_manager": use_risk_manager,
         "auto_run_dir": auto_run_dir,
+        "benchmark_symbol": benchmark_symbol,
     }
 
 
@@ -200,11 +205,19 @@ def _render_summary(summary: dict) -> None:
         ("Calmar Ratio", format_number(summary.get("calmar_ratio"))),
         ("Rebalance Win Rate", format_percentage(summary.get("rebalance_win_rate"))),
     ]
+    if "benchmark_total_return" in summary:
+        metrics.extend(
+            [
+                ("Benchmark Total Return", format_percentage(summary.get("benchmark_total_return"))),
+                ("Benchmark Max Drawdown", format_percentage(summary.get("benchmark_max_drawdown"))),
+                ("Excess Total Return", format_percentage(summary.get("excess_total_return"))),
+            ]
+        )
     for index, (label, value) in enumerate(metrics):
         columns[index % len(columns)].metric(label, value)
 
 
-def _render_charts(nav: pd.DataFrame) -> None:
+def _render_charts(nav: pd.DataFrame, strategy_vs_benchmark: pd.DataFrame | None = None) -> None:
     st.subheader("NAV")
     nav_chart = nav[["date", "nav"]].copy()
     nav_chart["date"] = pd.to_datetime(nav_chart["date"])
@@ -217,6 +230,14 @@ def _render_charts(nav: pd.DataFrame) -> None:
         st.line_chart(drawdown_chart.set_index("date")["drawdown"])
     else:
         st.info("Drawdown data is not available.")
+
+    st.subheader("Strategy vs Benchmark")
+    if strategy_vs_benchmark is None or strategy_vs_benchmark.empty:
+        st.info("Benchmark is not enabled.")
+    else:
+        comparison = strategy_vs_benchmark[["date", "strategy_nav", "benchmark_nav"]].copy()
+        comparison["date"] = pd.to_datetime(comparison["date"])
+        st.line_chart(comparison.set_index("date"))
 
 
 def _render_tables(positions: pd.DataFrame, trades: pd.DataFrame, signals: pd.DataFrame) -> None:
@@ -256,8 +277,12 @@ def _render_downloads(output_paths: dict[str, str]) -> None:
         ("signals", "signals.csv", "text/csv"),
         ("report", "report.md", "text/markdown"),
         ("metadata", "metadata.json", "application/json"),
+        ("benchmark_nav", "benchmark_nav.csv", "text/csv"),
+        ("strategy_vs_benchmark", "strategy_vs_benchmark.csv", "text/csv"),
     ]
     for key, file_name, mime in downloads:
+        if key not in output_paths:
+            continue
         path = Path(output_paths[key])
         if not path.exists():
             st.info(f"{file_name} is not available.")

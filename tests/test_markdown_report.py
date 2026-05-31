@@ -47,6 +47,22 @@ def test_report_contains_core_performance_fields_and_percentage_format():
     assert "12.34%" in report
 
 
+def test_report_contains_benchmark_section_when_enabled():
+    summary = make_summary() | {
+        "benchmark_total_return": 0.1,
+        "benchmark_max_drawdown": -0.05,
+        "excess_total_return": 0.0234,
+    }
+
+    report = generate_markdown_report(summary, benchmark_symbol="ETF_A")
+
+    assert "## Benchmark" in report
+    assert "Benchmark Symbol: ETF_A" in report
+    assert "Benchmark Total Return: 10.00%" in report
+    assert "Benchmark Max Drawdown: -5.00%" in report
+    assert "Excess Total Return: 2.34%" in report
+
+
 def test_format_helpers_handle_nan_none_numbers_and_dates():
     assert format_percentage(math.nan) == "N/A"
     assert format_number(None) == "N/A"

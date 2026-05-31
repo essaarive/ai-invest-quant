@@ -106,6 +106,7 @@ def test_demo_pipeline_writes_metadata_json_with_config_summary_and_paths(tmp_pa
         "slippage": 0.001,
         "use_risk_manager": False,
         "auto_run_dir": False,
+        "benchmark_symbol": None,
     }
     assert set(metadata["output_paths"]) == {"nav", "trades", "positions", "signals", "report", "metadata"}
     assert metadata["output_paths"]["metadata"] == str(metadata_path)
@@ -122,6 +123,29 @@ def test_demo_pipeline_writes_metadata_json_with_config_summary_and_paths(tmp_pa
         ]
     ).issubset(metadata["summary"])
     assert_no_nan_or_infinity(metadata)
+
+
+def test_demo_pipeline_with_benchmark_writes_benchmark_outputs(tmp_path):
+    csv_path = tmp_path / "prices.csv"
+    output_dir = tmp_path / "benchmark_outputs"
+    make_demo_csv(csv_path)
+
+    result = run_etf_rotation_demo(csv_path, output_dir=output_dir, benchmark_symbol="ETF_A")
+
+    assert Path(result["output_paths"]["benchmark_nav"]).exists()
+    assert Path(result["output_paths"]["strategy_vs_benchmark"]).exists()
+    assert not result["benchmark_nav"].empty
+    assert not result["strategy_vs_benchmark"].empty
+    assert "benchmark_total_return" in result["summary"]
+    assert "benchmark_max_drawdown" in result["summary"]
+    assert "excess_total_return" in result["summary"]
+
+    with Path(result["output_paths"]["metadata"]).open("r", encoding="utf-8") as file:
+        metadata = json.load(file)
+
+    assert metadata["config"]["benchmark_symbol"] == "ETF_A"
+    assert "benchmark_nav" in metadata["output_paths"]
+    assert "strategy_vs_benchmark" in metadata["output_paths"]
 
 
 def test_demo_pipeline_runs_without_risk_manager(tmp_path):

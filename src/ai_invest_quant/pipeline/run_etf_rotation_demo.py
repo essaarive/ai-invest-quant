@@ -8,6 +8,11 @@ from ai_invest_quant.backtest.engine import run_backtest
 from ai_invest_quant.data.loader import load_csv
 from ai_invest_quant.indicators.returns import add_daily_return, add_period_return
 from ai_invest_quant.indicators.trend import add_moving_average
+from ai_invest_quant.performance.benchmark import (
+    build_benchmark_nav,
+    calculate_benchmark_summary,
+    merge_strategy_benchmark_nav,
+)
 from ai_invest_quant.performance.metrics import calculate_performance_summary
 from ai_invest_quant.report.markdown_report import generate_markdown_report
 from ai_invest_quant.report.metadata import write_metadata
@@ -28,6 +33,7 @@ def run_etf_rotation_demo(
     slippage=0.0005,
     use_risk_manager=True,
     auto_run_dir=False,
+    benchmark_symbol=None,
 ) -> dict[str, object]:
     """Run the full ETF rotation demo pipeline from local CSV to report."""
     output_root = create_run_directory(output_dir) if auto_run_dir else Path(output_dir)
@@ -66,6 +72,17 @@ def run_etf_rotation_demo(
         "report": str(output_root / "report.md"),
         "metadata": str(output_root / "metadata.json"),
     }
+    benchmark_nav = None
+    strategy_vs_benchmark = None
+    if benchmark_symbol is not None:
+        benchmark_nav = build_benchmark_nav(data, benchmark_symbol)
+        benchmark_summary = calculate_benchmark_summary(benchmark_nav)
+        summary.update(benchmark_summary)
+        summary["excess_total_return"] = summary["total_return"] - benchmark_summary["benchmark_total_return"]
+        strategy_vs_benchmark = merge_strategy_benchmark_nav(nav, benchmark_nav)
+        output_paths["benchmark_nav"] = str(output_root / "benchmark_nav.csv")
+        output_paths["strategy_vs_benchmark"] = str(output_root / "strategy_vs_benchmark.csv")
+
     if auto_run_dir:
         output_paths["run_index"] = str(Path(output_dir) / "runs" / "index.csv")
 
@@ -73,6 +90,9 @@ def run_etf_rotation_demo(
     trades.to_csv(output_paths["trades"], index=False)
     positions.to_csv(output_paths["positions"], index=False)
     signals.to_csv(output_paths["signals"], index=False)
+    if benchmark_nav is not None and strategy_vs_benchmark is not None:
+        benchmark_nav.to_csv(output_paths["benchmark_nav"], index=False)
+        strategy_vs_benchmark.to_csv(output_paths["strategy_vs_benchmark"], index=False)
 
     report = generate_markdown_report(
         summary=summary,
@@ -80,6 +100,7 @@ def run_etf_rotation_demo(
         trades_df=trades,
         positions_df=positions,
         signals_df=signals,
+        benchmark_symbol=benchmark_symbol,
         output_path=output_paths["report"],
     )
     config_snapshot = {
@@ -93,6 +114,7 @@ def run_etf_rotation_demo(
         "slippage": slippage,
         "use_risk_manager": use_risk_manager,
         "auto_run_dir": auto_run_dir,
+        "benchmark_symbol": benchmark_symbol,
     }
     metadata = write_metadata(
         path=output_paths["metadata"],
@@ -104,7 +126,7 @@ def run_etf_rotation_demo(
     if auto_run_dir:
         append_run_index(output_paths["run_index"], metadata)
 
-    return {
+    result = {
         "nav": nav,
         "trades": trades,
         "positions": positions,
@@ -114,3 +136,7 @@ def run_etf_rotation_demo(
         "output_paths": output_paths,
         "actual_output_dir": actual_output_dir,
     }
+    if benchmark_symbol is not None:
+        result["benchmark_nav"] = benchmark_nav
+        result["strategy_vs_benchmark"] = strategy_vs_benchmark
+    return result

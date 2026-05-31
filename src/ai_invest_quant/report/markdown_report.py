@@ -15,6 +15,9 @@ PERCENTAGE_FIELDS = {
     "annual_volatility",
     "total_turnover_by_amount",
     "rebalance_win_rate",
+    "benchmark_total_return",
+    "benchmark_max_drawdown",
+    "excess_total_return",
 }
 
 
@@ -24,6 +27,7 @@ def generate_markdown_report(
     trades_df=None,
     positions_df=None,
     signals_df=None,
+    benchmark_symbol: str | None = None,
     strategy_name: str = "ETF Rotation Strategy",
     output_path=None,
 ) -> str:
@@ -57,6 +61,10 @@ def generate_markdown_report(
     for label, key in metrics:
         formatter = format_percentage if key in PERCENTAGE_FIELDS else format_number
         lines.append(f"| {label} | {formatter(summary.get(key))} |")
+
+    if benchmark_symbol is not None or _has_benchmark_summary(summary):
+        lines.extend(["", "## Benchmark", ""])
+        lines.extend(_format_benchmark_summary(summary, benchmark_symbol))
 
     lines.extend(["", "## Risk Status Summary", ""])
     lines.extend(_format_risk_summary(nav_df))
@@ -125,6 +133,26 @@ def _format_risk_summary(nav_df) -> list[str]:
         f"- Latest Drawdown: {format_percentage(drawdown)}",
         f"- Defensive Days: {defensive_days}",
     ]
+
+
+def _format_benchmark_summary(summary: dict, benchmark_symbol: str | None) -> list[str]:
+    return [
+        f"- Benchmark Symbol: {benchmark_symbol or 'N/A'}",
+        f"- Benchmark Total Return: {format_percentage(summary.get('benchmark_total_return'))}",
+        f"- Benchmark Max Drawdown: {format_percentage(summary.get('benchmark_max_drawdown'))}",
+        f"- Excess Total Return: {format_percentage(summary.get('excess_total_return'))}",
+    ]
+
+
+def _has_benchmark_summary(summary: dict) -> bool:
+    return any(
+        key in summary
+        for key in [
+            "benchmark_total_return",
+            "benchmark_max_drawdown",
+            "excess_total_return",
+        ]
+    )
 
 
 def _format_current_positions(positions_df) -> list[str]:
@@ -200,4 +228,3 @@ def _is_missing(value: Any) -> bool:
         return bool(pd.isna(value))
     except TypeError:
         return False
-

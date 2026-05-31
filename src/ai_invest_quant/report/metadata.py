@@ -21,6 +21,9 @@ SUMMARY_KEYS = (
     "sharpe_ratio",
     "calmar_ratio",
     "rebalance_win_rate",
+    "benchmark_total_return",
+    "benchmark_max_drawdown",
+    "excess_total_return",
 )
 
 

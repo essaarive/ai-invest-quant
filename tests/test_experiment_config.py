@@ -17,10 +17,37 @@ def test_default_demo_config_file_loads():
     assert config["output_dir"] == "outputs/dashboard_demo"
     assert config["use_risk_manager"] is True
     assert config["auto_run_dir"] is False
+    assert config["benchmark_symbol"] == "ETF_A"
 
 
 def test_default_config_contains_auto_run_dir():
     assert DEFAULT_EXPERIMENT_CONFIG["auto_run_dir"] is False
+
+
+def test_default_config_contains_benchmark_symbol():
+    assert DEFAULT_EXPERIMENT_CONFIG["benchmark_symbol"] is None
+
+
+def test_validate_experiment_config_accepts_none_benchmark_symbol():
+    config = dict(DEFAULT_EXPERIMENT_CONFIG)
+    config["benchmark_symbol"] = None
+
+    assert validate_experiment_config(config)["benchmark_symbol"] is None
+
+
+def test_validate_experiment_config_accepts_non_empty_benchmark_symbol():
+    config = dict(DEFAULT_EXPERIMENT_CONFIG)
+    config["benchmark_symbol"] = " ETF_A "
+
+    assert validate_experiment_config(config)["benchmark_symbol"] == "ETF_A"
+
+
+def test_validate_experiment_config_rejects_empty_benchmark_symbol():
+    config = dict(DEFAULT_EXPERIMENT_CONFIG)
+    config["benchmark_symbol"] = ""
+
+    with pytest.raises(ValueError, match="benchmark_symbol must be None or a non-empty string"):
+        validate_experiment_config(config)
 
 
 def test_validate_experiment_config_accepts_auto_run_dir_bool():
