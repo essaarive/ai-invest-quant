@@ -20,8 +20,8 @@ def test_dashboard_screenshot_assets_exist():
 def test_project_status_contains_required_content():
     text = (PROJECT_ROOT / "docs" / "PROJECT_STATUS.md").read_text(encoding="utf-8")
 
-    assert "V0.2 Research MVP" in text
-    assert "205 passed" in text
+    assert "V0.3 Research Workbench" in text
+    assert "237 passed" in text
     assert "Not Supported" in text
 
 
@@ -30,12 +30,15 @@ def test_architecture_contains_required_content():
 
     assert "Data Flow" in text
     assert "Backtest Assumptions" in text
+    assert "sensitivity" in text
 
 
 def test_roadmap_contains_required_content():
     text = (PROJECT_ROOT / "docs" / "ROADMAP.md").read_text(encoding="utf-8")
 
     assert "Short-Term Roadmap" in text
+    assert "CLI run-sensitivity" in text
+    assert "Walk-forward testing" in text
 
 
 def test_readme_links_to_project_docs():
@@ -51,6 +54,8 @@ def test_readme_showcase_sections_exist():
     text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
 
     assert "AI Invest Quant" in text
+    assert "V0.3 Research Workbench" in text
+    assert "237 passed" in text
     assert "Dashboard Preview" in text
     assert "docs/assets/dashboard_overview.png" in text
     assert "docs/assets/run_history.png" in text
@@ -67,6 +72,7 @@ def test_demo_guide_contains_dashboard_and_history_comparison():
     assert "Run Dashboard" in text
     assert "Compare Historical Runs" in text
     assert "Run Parameter Sensitivity" in text
+    assert "run-sensitivity" in text
     assert "sensitivity_summary.csv" in text
     assert "assets/dashboard_overview.png" in text
     assert "assets/run_history.png" in text

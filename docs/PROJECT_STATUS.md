@@ -6,11 +6,11 @@ AI Invest Quant
 
 ## Current Version
 
-V0.2 Research MVP
+V0.3 Research Workbench
 
 ## Current Status
 
-AI Invest Quant is a local ETF rotation quantitative research MVP. It is designed for historical backtesting, experiment management, benchmark comparison, out-of-sample evaluation, and local visual inspection through a Streamlit Dashboard.
+AI Invest Quant is a local ETF rotation quantitative research workbench. It is designed for historical backtesting, experiment management, benchmark comparison, out-of-sample evaluation, parameter sensitivity analysis, and local visual inspection through a Streamlit Dashboard.
 
 The project is intended for research, learning, and reproducible strategy experiments. It is not an automatic trading system.
 
@@ -54,7 +54,7 @@ The project is intended for research, learning, and reproducible strategy experi
 
 ## Latest Test Result
 
-205 passed
+237 passed
 
 ## Development Quality Checks
 

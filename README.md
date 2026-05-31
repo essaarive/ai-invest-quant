@@ -2,10 +2,14 @@
 
 [![CI](https://github.com/essaarive/ai-invest-quant/actions/workflows/ci.yml/badge.svg)](https://github.com/essaarive/ai-invest-quant/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![pytest](https://img.shields.io/badge/pytest-215%20passed-brightgreen)
+![pytest](https://img.shields.io/badge/pytest-237%20passed-brightgreen)
 ![Ruff](https://img.shields.io/badge/ruff-enabled-purple)
 
 AI-assisted ETF rotation research MVP with backtesting, risk controls, benchmark comparison, out-of-sample evaluation, experiment tracking, and Streamlit dashboard.
+
+Current version: V0.3 Research Workbench.
+
+Current local test status: 237 passed.
 
 ## What This Project Does
 
@@ -80,7 +84,7 @@ By default, demo outputs are written to `outputs/demo/`.
 | Benchmark | Strategy vs Benchmark comparison using a selected ETF symbol |
 | OOS | Out-of-Sample Evaluation by splitting the latest date range |
 | Experiments | JSON config, `metadata.json`, `auto_run_dir`, `runs/index.csv` |
-| Sensitivity | Batch run ETF rotation parameter combinations and save `sensitivity_summary.csv` |
+| Parameter Sensitivity Analysis | Batch run ETF rotation parameter combinations and save `sensitivity_summary.csv` |
 | Dashboard | CSV upload, output downloads, run history, historical run comparison |
 
 ## What Is Not Supported

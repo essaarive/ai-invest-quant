@@ -4,15 +4,15 @@
 
 AI Invest Quant is organized as a local research pipeline. Each module owns one part of the workflow:
 
-- Data Layer: load, validate, clean, sort, and deduplicate local CSV market data
+- Data Layer: adapt external ETF CSV columns, load, validate, clean, sort, and deduplicate local market data
 - Indicators: calculate moving averages and returns
 - Strategy: generate ETF rotation target-weight signals
 - Backtest Engine: execute signals on historical prices and produce NAV, trades, and positions
 - Risk Manager: apply position caps, exposure caps, and drawdown-based defensive mode
 - Performance: calculate strategy metrics, benchmark comparison, and out-of-sample evaluation
 - Report: generate Markdown reports, metadata, run index, historical loading, and run comparison helpers
-- Pipeline: run the full ETF rotation workflow end to end
-- CLI: expose local demo execution through `ai-invest-quant`
+- Pipeline: run the full ETF rotation workflow end to end and run parameter sensitivity analysis
+- CLI: expose local demo execution and `run-sensitivity` through `ai-invest-quant`
 - Dashboard: provide a local Streamlit interface for running, loading, comparing, and downloading experiments
 - Experiment Management: preserve config snapshots, metadata, timestamped run directories, and `runs/index.csv`
 
@@ -20,19 +20,20 @@ AI Invest Quant is organized as a local research pipeline. Each module owns one 
 
 ```text
 CSV
+-> data adapter
 -> loader / validator / cleaner
 -> indicators
 -> strategy signals
 -> backtest engine
 -> nav / trades / positions
 -> metrics / benchmark / OOS
--> report / metadata / index
+-> report / metadata / index / sensitivity summary
 -> CLI / Dashboard
 ```
 
 ## Core Modules
 
-- `src/ai_invest_quant/data/`: CSV loading, field validation, numeric conversion, date parsing, sorting, and deduplication
+- `src/ai_invest_quant/data/`: ETF CSV data adapter, CSV loading, field validation, numeric conversion, date parsing, sorting, and deduplication
 - `src/ai_invest_quant/indicators/`: moving averages and return indicators
 - `src/ai_invest_quant/strategies/`: ETF rotation signal generation
 - `src/ai_invest_quant/backtest/`: historical execution engine
@@ -40,7 +41,7 @@ CSV
 - `src/ai_invest_quant/risk/`: risk manager and target-weight clipping
 - `src/ai_invest_quant/performance/`: performance metrics, benchmark comparison, and out-of-sample evaluation
 - `src/ai_invest_quant/report/`: Markdown report, metadata, run index, historical loading, and run comparison
-- `src/ai_invest_quant/pipeline/`: end-to-end ETF rotation demo runner
+- `src/ai_invest_quant/pipeline/`: end-to-end ETF rotation demo runner and sensitivity pipeline
 - `src/ai_invest_quant/config/`: JSON experiment config loading, validation, and saving
 - `dashboard/`: local Streamlit Dashboard
 

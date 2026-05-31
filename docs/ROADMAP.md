@@ -15,6 +15,7 @@
 - Automatic timestamped run directories
 - `runs/index.csv` experiment index
 - CLI with config support
+- CLI run-sensitivity
 - Streamlit Dashboard
 - Dashboard CSV upload
 - Output file downloads
@@ -31,12 +32,14 @@
 - Dashboard polish
 - Better benchmark visualization
 - More robust date handling if needed
+- Walk-forward testing
+- Strategy interface
+- Transaction constraints
+- Better real-data examples
+- Chinese/English dashboard labels
 
 ## Mid-Term Roadmap
 
-- Walk-forward testing
-- Multiple strategy interface
-- Transaction constraints
 - Benchmark excess return analytics
 
 ## Long-Term Roadmap

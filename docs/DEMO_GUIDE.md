@@ -43,6 +43,22 @@ date,symbol,open,high,low,close,volume,amount
 
 Uploaded files still go through the same validation and cleaning pipeline.
 
+## Use Data Adapter
+
+Use the ETF CSV data adapter when source files use common Chinese or English column names:
+
+```python
+from ai_invest_quant.data.adapters import standardize_price_csv
+
+standardize_price_csv(
+    input_path="raw.csv",
+    output_path="data/processed/etf_prices.csv",
+    default_symbol="ETF_A",
+)
+```
+
+See [Data Guide](DATA_GUIDE.md) for supported mappings.
+
 ## Enable Benchmark
 
 From the CLI:
