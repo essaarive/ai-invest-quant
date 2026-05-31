@@ -65,7 +65,7 @@ def _validate_date(series: pd.Series) -> None:
         raise ValueError("Column 'date' cannot be empty")
 
     try:
-        pd.to_datetime(series, errors="raise")
+        pd.to_datetime(series, format="%Y-%m-%d", errors="raise")
     except Exception as exc:
         raise ValueError("Column 'date' must be parseable as dates") from exc
 
@@ -81,4 +81,3 @@ def _to_numeric(series: pd.Series, column: str) -> pd.Series:
         return pd.to_numeric(series, errors="raise")
     except Exception as exc:
         raise ValueError(f"Column '{column}' must be numeric") from exc
-

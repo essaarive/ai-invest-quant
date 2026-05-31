@@ -1,3 +1,5 @@
+import warnings
+
 import pandas as pd
 import pytest
 
@@ -36,6 +38,14 @@ def test_invalid_date_raises_error():
     df = valid_df()
     df.loc[0, "date"] = "not-a-date"
     assert_invalid(df, "date.*parseable")
+
+
+def test_standard_dates_validate_without_warning():
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        validate_market_data(valid_df())
+
+    assert caught == []
 
 
 def test_empty_symbol_raises_error():
@@ -82,4 +92,3 @@ def test_low_must_not_be_above_open_or_close(low, expected_message):
     df = valid_df()
     df.loc[0, "low"] = low
     assert_invalid(df, expected_message)
-
