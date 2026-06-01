@@ -16,6 +16,7 @@
 - `runs/index.csv` experiment index
 - CLI with config support
 - CLI run-sensitivity
+- CLI run-walk-forward
 - Streamlit Dashboard
 - Dashboard CSV upload
 - Output file downloads

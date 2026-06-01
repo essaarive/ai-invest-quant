@@ -2,6 +2,8 @@
 
 This guide shows how to run and inspect the local historical ETF rotation demo.
 
+Current workbench version: V0.3.1.
+
 ## Run CLI Demo
 
 ```bash
