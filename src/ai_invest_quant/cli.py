@@ -13,12 +13,14 @@ from ai_invest_quant.config.experiment_config import (
 )
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
 from ai_invest_quant.pipeline.sensitivity import run_parameter_sensitivity
+from ai_invest_quant.pipeline.walk_forward import run_walk_forward_test
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SAMPLE_CSV = PROJECT_ROOT / "data" / "samples" / "sample_etf_prices.csv"
 DEFAULT_OUTPUT_DIR = "outputs/demo"
 DEFAULT_SENSITIVITY_OUTPUT_DIR = "outputs/sensitivity"
+DEFAULT_WALK_FORWARD_OUTPUT_DIR = "outputs/walk_forward"
 DEFAULT_RUN_DEMO_CONFIG = DEFAULT_EXPERIMENT_CONFIG | {
     "csv_path": str(DEFAULT_SAMPLE_CSV),
     "output_dir": DEFAULT_OUTPUT_DIR,
@@ -146,6 +148,41 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sensitivity_parser.set_defaults(use_risk_manager=True, command_func=run_sensitivity_command)
 
+    walk_forward_parser = subparsers.add_parser(
+        "run-walk-forward",
+        help="Run lightweight ETF rotation walk-forward testing.",
+    )
+    walk_forward_parser.add_argument(
+        "--csv-path", default=str(DEFAULT_SAMPLE_CSV), help="Input CSV path."
+    )
+    walk_forward_parser.add_argument(
+        "--output-dir", default=DEFAULT_WALK_FORWARD_OUTPUT_DIR, help="Output directory."
+    )
+    walk_forward_parser.add_argument("--train-window-days", type=int, default=120)
+    walk_forward_parser.add_argument("--test-window-days", type=int, default=60)
+    walk_forward_parser.add_argument("--step-days", type=int, default=60)
+    walk_forward_parser.add_argument("--initial-cash", type=float, default=1_000_000)
+    walk_forward_parser.add_argument("--rebalance-interval", type=int, default=5)
+    walk_forward_parser.add_argument("--top-n", type=int, default=3)
+    walk_forward_parser.add_argument("--target-exposure", type=float, default=0.8)
+    walk_forward_parser.add_argument("--fee-rate", type=float, default=0.001)
+    walk_forward_parser.add_argument("--slippage", type=float, default=0.0005)
+    walk_forward_parser.add_argument("--benchmark-symbol", default=None)
+    walk_forward_risk_group = walk_forward_parser.add_mutually_exclusive_group()
+    walk_forward_risk_group.add_argument(
+        "--use-risk-manager",
+        dest="use_risk_manager",
+        action="store_true",
+        help="Enable risk manager.",
+    )
+    walk_forward_risk_group.add_argument(
+        "--no-risk-manager",
+        dest="use_risk_manager",
+        action="store_false",
+        help="Disable risk manager.",
+    )
+    walk_forward_parser.set_defaults(use_risk_manager=True, command_func=run_walk_forward_command)
+
     return parser
 
 
@@ -210,6 +247,31 @@ def run_sensitivity_command(args: argparse.Namespace) -> None:
     print("Sensitivity analysis completed.")
     print(f"Summary: {result['summary_path']}")
     print(f"Runs: {len(result['runs'])}")
+
+
+def run_walk_forward_command(args: argparse.Namespace) -> None:
+    """Validate arguments, run walk-forward testing, and print summary location."""
+    csv_path = _resolve_csv_path(args.csv_path)
+    _validate_walk_forward_args(args, csv_path)
+    result = run_walk_forward_test(
+        csv_path=csv_path,
+        output_dir=args.output_dir,
+        train_window_days=args.train_window_days,
+        test_window_days=args.test_window_days,
+        step_days=args.step_days,
+        initial_cash=args.initial_cash,
+        rebalance_interval=args.rebalance_interval,
+        top_n=args.top_n,
+        target_exposure=args.target_exposure,
+        fee_rate=args.fee_rate,
+        slippage=args.slippage,
+        use_risk_manager=args.use_risk_manager,
+        benchmark_symbol=args.benchmark_symbol,
+    )
+
+    print("Walk-forward test completed.")
+    print(f"Summary: {result['summary_path']}")
+    print(f"Windows: {len(result['runs'])}")
 
 
 def parse_int_list(value: str) -> list[int]:
@@ -316,6 +378,29 @@ def _validate_sensitivity_args(args: argparse.Namespace, csv_path: Path) -> None
         raise ValueError("top_n_values must be positive integers")
     if any(value <= 0 for value in rebalance_interval_values):
         raise ValueError("rebalance_interval_values must be positive integers")
+
+
+def _validate_walk_forward_args(args: argparse.Namespace, csv_path: Path) -> None:
+    if not csv_path.exists():
+        raise ValueError(f"csv_path does not exist: {csv_path}")
+    if args.train_window_days <= 0:
+        raise ValueError("train_window_days must be a positive integer")
+    if args.test_window_days <= 0:
+        raise ValueError("test_window_days must be a positive integer")
+    if args.step_days <= 0:
+        raise ValueError("step_days must be a positive integer")
+    if args.rebalance_interval <= 0:
+        raise ValueError("rebalance_interval must be > 0")
+    if args.top_n <= 0:
+        raise ValueError("top_n must be > 0")
+    if args.target_exposure < 0 or args.target_exposure > 1:
+        raise ValueError("target_exposure must be >= 0 and <= 1")
+    if args.initial_cash <= 0:
+        raise ValueError("initial_cash must be > 0")
+    if args.fee_rate < 0:
+        raise ValueError("fee_rate must be >= 0")
+    if args.slippage < 0:
+        raise ValueError("slippage must be >= 0")
 
 
 if __name__ == "__main__":

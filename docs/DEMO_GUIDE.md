@@ -148,6 +148,16 @@ for research stability checks only and is not an investment recommendation.
 
 ## Run Walk-forward Testing
 
+From the CLI:
+
+```bash
+ai-invest-quant run-walk-forward \
+  --train-window-days 120 \
+  --test-window-days 60 \
+  --step-days 60 \
+  --benchmark-symbol ETF_A
+```
+
 In the Dashboard:
 
 1. Open `Walk-forward Testing`.

@@ -42,6 +42,7 @@ The project is intended for research, learning, and reproducible strategy experi
 - Parameter sensitivity analysis
 - Walk-forward testing
 - CLI `run-sensitivity` support
+- CLI `run-walk-forward` support
 
 ## Not Supported
 

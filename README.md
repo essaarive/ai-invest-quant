@@ -306,6 +306,16 @@ This is for research stability checks only. It does not recommend investment par
 
 Walk-forward Testing:
 
+From the CLI:
+
+```bash
+ai-invest-quant run-walk-forward \
+  --train-window-days 120 \
+  --test-window-days 60 \
+  --step-days 60 \
+  --benchmark-symbol ETF_A
+```
+
 The Dashboard can run rolling train/test windows. Each test window is executed as a separate
 historical backtest, and the aggregate results are written to `walk_forward_summary.csv`.
 

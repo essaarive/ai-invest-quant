@@ -37,6 +37,7 @@ def test_cli_help_runs(tmp_path):
     assert result.returncode == 0
     assert "run-demo" in result.stdout
     assert "run-sensitivity" in result.stdout
+    assert "run-walk-forward" in result.stdout
 
 
 def test_run_demo_help_runs(tmp_path):
@@ -57,6 +58,15 @@ def test_run_sensitivity_help_runs(tmp_path):
     assert "--top-n-values" in result.stdout
     assert "--target-exposure-values" in result.stdout
     assert "--rebalance-interval-values" in result.stdout
+
+
+def test_run_walk_forward_help_runs(tmp_path):
+    result = run_cli(["run-walk-forward", "--help"], tmp_path)
+
+    assert result.returncode == 0
+    assert "--train-window-days" in result.stdout
+    assert "--test-window-days" in result.stdout
+    assert "--step-days" in result.stdout
 
 
 def test_default_run_demo_succeeds(tmp_path):
@@ -430,5 +440,84 @@ def test_run_sensitivity_with_benchmark_symbol_succeeds(tmp_path):
 
     assert result.returncode == 0
     summary = pd.read_csv(output_dir / "sensitivity_summary.csv")
+    assert "benchmark_total_return" in summary.columns
+    assert summary["benchmark_total_return"].notna().all()
+
+
+def test_run_walk_forward_small_windows_succeeds(tmp_path):
+    output_dir = tmp_path / "walk_forward_small"
+
+    result = run_cli(
+        [
+            "run-walk-forward",
+            "--output-dir",
+            str(output_dir),
+            "--train-window-days",
+            "20",
+            "--test-window-days",
+            "70",
+            "--step-days",
+            "70",
+        ],
+        tmp_path,
+    )
+
+    assert result.returncode == 0
+    assert "Walk-forward test completed" in result.stdout
+    assert "Summary:" in result.stdout
+    assert "Windows: 1" in result.stdout
+    assert (output_dir / "walk_forward_summary.csv").exists()
+
+
+def test_run_walk_forward_invalid_train_window_returns_non_zero(tmp_path):
+    result = run_cli(["run-walk-forward", "--train-window-days", "0"], tmp_path)
+
+    assert result.returncode != 0
+    assert "train_window_days must be a positive integer" in result.stderr
+
+
+def test_run_walk_forward_invalid_test_window_returns_non_zero(tmp_path):
+    result = run_cli(["run-walk-forward", "--test-window-days", "0"], tmp_path)
+
+    assert result.returncode != 0
+    assert "test_window_days must be a positive integer" in result.stderr
+
+
+def test_run_walk_forward_invalid_step_days_returns_non_zero(tmp_path):
+    result = run_cli(["run-walk-forward", "--step-days", "0"], tmp_path)
+
+    assert result.returncode != 0
+    assert "step_days must be a positive integer" in result.stderr
+
+
+def test_run_walk_forward_invalid_target_exposure_returns_non_zero(tmp_path):
+    result = run_cli(["run-walk-forward", "--target-exposure", "1.5"], tmp_path)
+
+    assert result.returncode != 0
+    assert "target_exposure must be >= 0 and <= 1" in result.stderr
+
+
+def test_run_walk_forward_with_benchmark_symbol_succeeds(tmp_path):
+    output_dir = tmp_path / "walk_forward_benchmark"
+
+    result = run_cli(
+        [
+            "run-walk-forward",
+            "--output-dir",
+            str(output_dir),
+            "--train-window-days",
+            "20",
+            "--test-window-days",
+            "70",
+            "--step-days",
+            "70",
+            "--benchmark-symbol",
+            "ETF_A",
+        ],
+        tmp_path,
+    )
+
+    assert result.returncode == 0
+    summary = pd.read_csv(output_dir / "walk_forward_summary.csv")
     assert "benchmark_total_return" in summary.columns
     assert summary["benchmark_total_return"].notna().all()
