@@ -2,14 +2,14 @@
 
 [![CI](https://github.com/essaarive/ai-invest-quant/actions/workflows/ci.yml/badge.svg)](https://github.com/essaarive/ai-invest-quant/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![pytest](https://img.shields.io/badge/pytest-250%20passed-brightgreen)
+![pytest](https://img.shields.io/badge/pytest-257%20passed-brightgreen)
 ![Ruff](https://img.shields.io/badge/ruff-enabled-purple)
 
 AI-assisted ETF rotation research MVP with backtesting, risk controls, benchmark comparison, out-of-sample evaluation, experiment tracking, and Streamlit dashboard.
 
-Current version: V0.3.1 Research Workbench.
+Current version: V0.3.2 Research Workbench.
 
-Current local test status: 250 passed.
+Current local test status: 257 passed.
 
 ## What This Project Does
 

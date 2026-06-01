@@ -7,7 +7,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_package_import_and_version():
-    assert ai_invest_quant.__version__ == "0.3.1"
+    assert ai_invest_quant.__version__ == "0.3.2"
 
 
 def test_cli_import_and_main_callable():
@@ -21,7 +21,7 @@ def test_pyproject_metadata_exists_and_contains_project_name_and_script():
 
     text = pyproject.read_text(encoding="utf-8")
     assert 'name = "ai-invest-quant"' in text
-    assert 'version = "0.3.1"' in text
+    assert 'version = "0.3.2"' in text
     assert 'ai-invest-quant = "ai_invest_quant.cli:main"' in text
 
 

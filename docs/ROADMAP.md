@@ -1,5 +1,7 @@
 # Roadmap
 
+Current release: V0.3.2 Research Workbench.
+
 ## Completed
 
 - Local CSV data loading, validation, cleaning, sorting, and deduplication

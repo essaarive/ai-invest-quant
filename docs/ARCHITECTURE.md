@@ -1,5 +1,7 @@
 # Architecture
 
+Current architecture status: V0.3.2 Research Workbench.
+
 ## High-Level Architecture
 
 AI Invest Quant is organized as a local research pipeline. Each module owns one part of the workflow:

@@ -6,7 +6,7 @@ AI Invest Quant
 
 ## Current Version
 
-V0.3.1 Research Workbench
+V0.3.2 Research Workbench
 
 ## Current Status
 
@@ -59,7 +59,7 @@ The project is intended for research, learning, and reproducible strategy experi
 
 ## Latest Test Result
 
-250 passed
+257 passed
 
 ## Development Quality Checks
 

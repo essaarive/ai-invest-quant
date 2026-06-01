@@ -20,8 +20,8 @@ def test_dashboard_screenshot_assets_exist():
 def test_project_status_contains_required_content():
     text = (PROJECT_ROOT / "docs" / "PROJECT_STATUS.md").read_text(encoding="utf-8")
 
-    assert "V0.3.1 Research Workbench" in text
-    assert "250 passed" in text
+    assert "V0.3.2 Research Workbench" in text
+    assert "257 passed" in text
     assert "CLI `run-walk-forward` support" in text
     assert "Lightweight strategy interface" in text
     assert "Not Supported" in text
@@ -33,6 +33,8 @@ def test_architecture_contains_required_content():
     assert "Data Flow" in text
     assert "Backtest Assumptions" in text
     assert "Strategy Protocol" in text
+    assert "StrategyMetadata" in text
+    assert "ETFRotationStrategy" in text
     assert "sensitivity" in text
 
 
@@ -59,8 +61,8 @@ def test_readme_showcase_sections_exist():
     text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
 
     assert "AI Invest Quant" in text
-    assert "V0.3.1 Research Workbench" in text
-    assert "250 passed" in text
+    assert "V0.3.2 Research Workbench" in text
+    assert "257 passed" in text
     assert "run-walk-forward" in text
     assert "Strategy interface" in text
     assert "Dashboard Preview" in text
