@@ -146,6 +146,22 @@ In the Dashboard:
 Each parameter combination is saved as a separate timestamped historical experiment. The summary is
 for research stability checks only and is not an investment recommendation.
 
+## Run Walk-forward Testing
+
+In the Dashboard:
+
+1. Open `Walk-forward Testing`.
+2. Set `Train window days`.
+3. Set `Test window days`.
+4. Set `Step days`.
+5. Click `Run Walk-forward Test`.
+6. Review the `Walk-forward Summary` table.
+7. Download `walk_forward_summary.csv`.
+
+Walk-forward testing uses rolling train/test windows. The training window is recorded as structure,
+and each test window runs as a separate historical backtest. This is for research only and is not an
+investment recommendation.
+
 ## Download Outputs
 
 After a run completes, the Dashboard can download:

@@ -14,6 +14,7 @@ from ai_invest_quant.config.experiment_config import (
 )
 from ai_invest_quant.pipeline.run_etf_rotation_demo import run_etf_rotation_demo
 from ai_invest_quant.pipeline.sensitivity import run_parameter_sensitivity
+from ai_invest_quant.pipeline.walk_forward import run_walk_forward_test
 from ai_invest_quant.report.markdown_report import format_number, format_percentage
 from ai_invest_quant.report.run_compare import load_runs_for_comparison
 from ai_invest_quant.report.run_index import load_run_index
@@ -61,6 +62,13 @@ TRANSLATIONS = {
     "Recent Signals": "近期信号",
     "Markdown Report": "Markdown 报告",
     "Download Outputs": "下载输出文件",
+    "Walk-forward Testing": "滚动样本外测试",
+    "Train window days": "训练窗口交易日数",
+    "Test window days": "测试窗口交易日数",
+    "Step days": "滚动步长交易日数",
+    "Run Walk-forward Test": "运行滚动样本外测试",
+    "Walk-forward Summary": "滚动测试汇总",
+    "Download walk_forward_summary.csv": "下载 walk_forward_summary.csv",
 }
 
 
@@ -197,6 +205,19 @@ def main() -> None:
         use_risk_manager=use_risk_manager,
         benchmark_symbol=benchmark_symbol.strip() or None,
         out_of_sample_ratio=out_of_sample_ratio,
+    )
+    _render_walk_forward_testing(
+        csv_path=csv_path,
+        uploaded_csv=uploaded_csv,
+        output_dir=output_dir,
+        initial_cash=initial_cash,
+        rebalance_interval=int(rebalance_interval),
+        top_n=int(top_n),
+        target_exposure=target_exposure,
+        fee_rate=fee_rate,
+        slippage=slippage,
+        use_risk_manager=use_risk_manager,
+        benchmark_symbol=benchmark_symbol.strip() or None,
     )
 
     result = st.session_state.get("dashboard_result")
@@ -351,6 +372,66 @@ def _parse_float_list(value: str) -> list[float]:
     if not values:
         raise ValueError("Expected at least one numeric value")
     return values
+
+
+def _render_walk_forward_testing(
+    csv_path: str,
+    uploaded_csv,
+    output_dir: str,
+    initial_cash: float,
+    rebalance_interval: int,
+    top_n: int,
+    target_exposure: float,
+    fee_rate: float,
+    slippage: float,
+    use_risk_manager: bool,
+    benchmark_symbol: str | None,
+) -> None:
+    st.subheader(t("Walk-forward Testing"))
+    train_window_days = st.number_input(t("Train window days"), min_value=1, value=120, step=10)
+    test_window_days = st.number_input(t("Test window days"), min_value=1, value=60, step=10)
+    step_days = st.number_input(t("Step days"), min_value=1, value=60, step=10)
+    if st.button(t("Run Walk-forward Test")):
+        try:
+            selected_csv_path = _resolve_csv_path(csv_path, uploaded_csv, output_dir)
+            if selected_csv_path is None:
+                return
+
+            with st.spinner("Running walk-forward test..."):
+                result = run_walk_forward_test(
+                    csv_path=selected_csv_path,
+                    output_dir=str(Path(output_dir) / "walk_forward"),
+                    train_window_days=int(train_window_days),
+                    test_window_days=int(test_window_days),
+                    step_days=int(step_days),
+                    initial_cash=initial_cash,
+                    rebalance_interval=rebalance_interval,
+                    top_n=top_n,
+                    target_exposure=target_exposure,
+                    fee_rate=fee_rate,
+                    slippage=slippage,
+                    use_risk_manager=use_risk_manager,
+                    benchmark_symbol=benchmark_symbol,
+                )
+            st.session_state["walk_forward_result"] = result
+            st.success("Walk-forward test completed")
+        except ValueError as exc:
+            st.error(str(exc))
+
+    walk_forward_result = st.session_state.get("walk_forward_result")
+    if walk_forward_result is None:
+        return
+
+    st.subheader(t("Walk-forward Summary"))
+    st.dataframe(walk_forward_result["summary"], use_container_width=True)
+    summary_path = Path(walk_forward_result["summary_path"])
+    if summary_path.exists():
+        st.download_button(
+            label=t("Download walk_forward_summary.csv"),
+            data=summary_path.read_bytes(),
+            file_name="walk_forward_summary.csv",
+            mime="text/csv",
+        )
 
 
 def _render_summary(summary: dict) -> None:

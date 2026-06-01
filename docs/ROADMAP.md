@@ -24,6 +24,7 @@
 - Benchmark comparison
 - Out-of-sample evaluation
 - Parameter sensitivity analysis
+- Walk-forward testing
 - Ruff lint and formatting configuration
 - GitHub Actions CI
 
@@ -32,7 +33,6 @@
 - Dashboard polish
 - Better benchmark visualization
 - More robust date handling if needed
-- Walk-forward testing
 - Strategy interface
 - Transaction constraints
 - Better real-data examples

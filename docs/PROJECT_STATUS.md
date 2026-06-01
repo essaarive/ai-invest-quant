@@ -40,6 +40,7 @@ The project is intended for research, learning, and reproducible strategy experi
 - Benchmark comparison
 - Out-of-sample evaluation
 - Parameter sensitivity analysis
+- Walk-forward testing
 - CLI `run-sensitivity` support
 
 ## Not Supported

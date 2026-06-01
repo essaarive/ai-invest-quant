@@ -74,6 +74,8 @@ def test_demo_guide_contains_dashboard_and_history_comparison():
     assert "Run Parameter Sensitivity" in text
     assert "run-sensitivity" in text
     assert "sensitivity_summary.csv" in text
+    assert "Run Walk-forward Testing" in text
+    assert "walk_forward_summary.csv" in text
     assert "assets/dashboard_overview.png" in text
     assert "assets/run_history.png" in text
     assert "assets/comparison_view.png" in text

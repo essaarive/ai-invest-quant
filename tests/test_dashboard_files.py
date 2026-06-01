@@ -58,6 +58,14 @@ def test_dashboard_app_exists_and_contains_required_streamlit_content():
     assert "Top N values" in text
     assert "Target exposure values" in text
     assert "Rebalance interval values" in text
+    assert "Walk-forward Testing" in text
+    assert "Run Walk-forward Test" in text
+    assert "walk_forward_summary.csv" in text
+    assert "Train window days" in text
+    assert "Test window days" in text
+    assert "Step days" in text
+    assert "滚动样本外测试" in text
+    assert "运行滚动样本外测试" in text
 
 
 def test_readme_documents_dashboard_command():

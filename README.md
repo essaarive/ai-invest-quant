@@ -21,6 +21,7 @@ Current local test status: 237 passed.
 - Evaluate in-sample vs out-of-sample performance
 - Track experiments with `metadata.json` and `runs/index.csv`
 - Run lightweight parameter sensitivity analysis
+- Run lightweight walk-forward testing with rolling train/test windows
 - Explore results in a local Streamlit Dashboard
 
 ## Dashboard Preview
@@ -85,6 +86,7 @@ By default, demo outputs are written to `outputs/demo/`.
 | OOS | Out-of-Sample Evaluation by splitting the latest date range |
 | Experiments | JSON config, `metadata.json`, `auto_run_dir`, `runs/index.csv` |
 | Parameter Sensitivity Analysis | Batch run ETF rotation parameter combinations and save `sensitivity_summary.csv` |
+| Walk-forward Testing | Rolling train/test windows with each test window saved as a separate backtest |
 | Dashboard | English / 中文 labels, CSV upload, output downloads, run history, historical run comparison |
 
 ## What Is Not Supported
@@ -301,6 +303,13 @@ combinations. Each combination is saved as a separate timestamped experiment, an
 results are written to `sensitivity_summary.csv`.
 
 This is for research stability checks only. It does not recommend investment parameters.
+
+Walk-forward Testing:
+
+The Dashboard can run rolling train/test windows. Each test window is executed as a separate
+historical backtest, and the aggregate results are written to `walk_forward_summary.csv`.
+
+This is for robustness research only and does not provide investment advice.
 
 This creates a directory similar to:
 
