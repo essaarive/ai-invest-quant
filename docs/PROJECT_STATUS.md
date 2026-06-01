@@ -20,6 +20,7 @@ The project is intended for research, learning, and reproducible strategy experi
 - ETF CSV data adapter
 - Data validation and cleaning
 - Trend and return indicators
+- Lightweight strategy interface
 - ETF rotation signal generation
 - Backtest engine
 - Portfolio and broker simulation

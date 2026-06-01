@@ -6,6 +6,7 @@
 - Real ETF CSV adapter
 - Moving average and return indicators
 - ETF rotation signal generation
+- Strategy interface
 - Backtest engine
 - Portfolio and broker simulation
 - Risk manager
@@ -34,10 +35,15 @@
 - Dashboard polish
 - Better benchmark visualization
 - More robust date handling if needed
-- Strategy interface
 - Transaction constraints
 - Better real-data examples
 - Chinese/English dashboard labels
+- Markdown Report bilingual support
+- Additional strategy examples:
+  - dual moving average strategy
+  - momentum strategy
+  - low-volatility strategy
+  - stock-bond rotation strategy
 
 ## Mid-Term Roadmap
 

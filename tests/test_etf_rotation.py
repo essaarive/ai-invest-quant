@@ -37,6 +37,16 @@ def test_signal_dates_every_five_trading_days_and_execute_next_day():
     assert (result["signal_date"] != result["execute_date"]).all()
 
 
+def test_function_api_remains_available():
+    dates = pd.date_range("2024-01-01", periods=2)
+    df = make_rows(dates, ["ETF_A"])
+
+    result = generate_etf_rotation_signals(df)
+
+    assert isinstance(result, pd.DataFrame)
+    assert result.loc[0, "symbol"] == "ETF_A"
+
+
 def test_result_index_is_continuous_from_zero():
     dates = pd.date_range("2024-01-01", periods=11)
     df = make_rows(dates, ["ETF_A", "ETF_B", "ETF_C"])

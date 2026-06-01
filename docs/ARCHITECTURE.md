@@ -6,7 +6,7 @@ AI Invest Quant is organized as a local research pipeline. Each module owns one 
 
 - Data Layer: adapt external ETF CSV columns, load, validate, clean, sort, and deduplicate local market data
 - Indicators: calculate moving averages and returns
-- Strategy: generate ETF rotation target-weight signals
+- Strategy: standardize strategy metadata/interfaces and generate ETF rotation target-weight signals
 - Backtest Engine: execute signals on historical prices and produce NAV, trades, and positions
 - Risk Manager: apply position caps, exposure caps, and drawdown-based defensive mode
 - Performance: calculate strategy metrics, benchmark comparison, and out-of-sample evaluation
@@ -35,7 +35,7 @@ CSV
 
 - `src/ai_invest_quant/data/`: ETF CSV data adapter, CSV loading, field validation, numeric conversion, date parsing, sorting, and deduplication
 - `src/ai_invest_quant/indicators/`: moving averages and return indicators
-- `src/ai_invest_quant/strategies/`: ETF rotation signal generation
+- `src/ai_invest_quant/strategies/`: Strategy Protocol, StrategyMetadata, ETFRotationStrategy wrapper, and ETF rotation signal generation
 - `src/ai_invest_quant/backtest/`: historical execution engine
 - `src/ai_invest_quant/portfolio/`: portfolio and broker-style accounting helpers
 - `src/ai_invest_quant/risk/`: risk manager and target-weight clipping
@@ -55,6 +55,15 @@ CSV
 - Fees and slippage are modeled.
 - Remaining unallocated capital is kept as cash.
 - Benchmark is used only for historical comparison.
+
+## Strategy Layer
+
+The strategy layer is intentionally lightweight:
+
+- `StrategyMetadata` stores strategy name, version, and description.
+- `Strategy Protocol` defines the expected `generate_signals(price_df)` method.
+- `ETFRotationStrategy` wraps the existing ETF rotation function for future class-based usage.
+- The existing function-based API remains compatible for pipelines and tests.
 
 ## Risk Assumptions
 

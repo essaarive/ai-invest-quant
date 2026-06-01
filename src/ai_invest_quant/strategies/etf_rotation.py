@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pandas as pd
 
+from ai_invest_quant.strategies.base import StrategyMetadata
+
 REQUIRED_COLUMNS = (
     "date",
     "symbol",
@@ -16,6 +18,35 @@ REQUIRED_COLUMNS = (
     "ma60",
     "return_20d",
 )
+
+
+class ETFRotationStrategy:
+    """Object-oriented wrapper around the function-based ETF rotation strategy."""
+
+    metadata = StrategyMetadata(
+        name="ETF Rotation Strategy",
+        version="1.0.0",
+        description="Trend-filtered ETF rotation strategy using moving average and return ranking.",
+    )
+
+    def __init__(
+        self,
+        rebalance_interval: int = 5,
+        top_n: int = 3,
+        target_exposure: float = 0.8,
+    ) -> None:
+        self.rebalance_interval = rebalance_interval
+        self.top_n = top_n
+        self.target_exposure = target_exposure
+
+    def generate_signals(self, price_df: pd.DataFrame) -> pd.DataFrame:
+        """Generate ETF rotation signals using the existing function implementation."""
+        return generate_etf_rotation_signals(
+            price_df,
+            rebalance_interval=self.rebalance_interval,
+            top_n=self.top_n,
+            target_exposure=self.target_exposure,
+        )
 
 
 def generate_etf_rotation_signals(

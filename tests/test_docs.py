@@ -23,6 +23,7 @@ def test_project_status_contains_required_content():
     assert "V0.3.1 Research Workbench" in text
     assert "250 passed" in text
     assert "CLI `run-walk-forward` support" in text
+    assert "Lightweight strategy interface" in text
     assert "Not Supported" in text
 
 
@@ -31,6 +32,7 @@ def test_architecture_contains_required_content():
 
     assert "Data Flow" in text
     assert "Backtest Assumptions" in text
+    assert "Strategy Protocol" in text
     assert "sensitivity" in text
 
 
@@ -41,6 +43,7 @@ def test_roadmap_contains_required_content():
     assert "CLI run-sensitivity" in text
     assert "CLI run-walk-forward" in text
     assert "Walk-forward testing" in text
+    assert "Markdown Report bilingual support" in text
 
 
 def test_readme_links_to_project_docs():
@@ -59,6 +62,7 @@ def test_readme_showcase_sections_exist():
     assert "V0.3.1 Research Workbench" in text
     assert "250 passed" in text
     assert "run-walk-forward" in text
+    assert "Strategy interface" in text
     assert "Dashboard Preview" in text
     assert "docs/assets/dashboard_overview.png" in text
     assert "docs/assets/run_history.png" in text

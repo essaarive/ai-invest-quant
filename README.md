@@ -15,6 +15,7 @@ Current local test status: 250 passed.
 
 - Load local ETF OHLCV CSV data
 - Generate ETF rotation signals
+- Use a lightweight Strategy interface for future strategy extensions
 - Run historical backtests
 - Apply risk controls
 - Compare strategy performance against a benchmark ETF
@@ -78,7 +79,7 @@ By default, demo outputs are written to `outputs/demo/`.
 | --- | --- |
 | Data | Local CSV loading, ETF CSV data adapter, validation, cleaning, sorting, and deduplication |
 | Indicators | MA20 / MA60 / MA120, daily return, 20-trading-day return |
-| Strategy | ETF rotation target-weight signals |
+| Strategy | Strategy interface plus ETF Rotation Strategy target-weight signals |
 | Backtest | Next-open execution, fees, slippage, trades, positions, NAV |
 | Risk | Position cap, exposure cap, defensive mode based on drawdown |
 | Performance | Total return, drawdown, volatility, Sharpe, Calmar, turnover, win rate |
@@ -88,6 +89,10 @@ By default, demo outputs are written to `outputs/demo/`.
 | Parameter Sensitivity Analysis | Batch run ETF rotation parameter combinations and save `sensitivity_summary.csv` |
 | Walk-forward Testing | Rolling train/test windows with each test window saved as a separate backtest |
 | Dashboard | English / 中文 labels, CSV upload, output downloads, run history, historical run comparison |
+
+The Strategy interface is available for future strategy extensions. The current implemented
+strategy is `ETF Rotation Strategy`, and the existing pipeline still uses the same ETF rotation
+logic and function-compatible API.
 
 ## What Is Not Supported
 
