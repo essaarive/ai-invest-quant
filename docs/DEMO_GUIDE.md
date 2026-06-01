@@ -31,6 +31,7 @@ streamlit run dashboard/app.py
 
 The Dashboard is local-only. It does not connect to brokers and does not place orders.
 The sidebar starts with `Language`. English is the default, and 中文 labels can be enabled to make the Dashboard easier to understand for local research.
+中文模式会翻译核心指标名称和常见表格列名。下载的 CSV 仍保持英文字段名，方便程序处理。少量 Streamlit 内置组件文本可能仍显示英文。
 
 ![Dashboard overview](assets/dashboard_overview.png)
 

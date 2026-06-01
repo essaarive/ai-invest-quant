@@ -366,6 +366,10 @@ The Dashboard lets you configure the bundled demo backtest, run it locally, and 
 - Benchmark symbol input, Strategy vs Benchmark chart, and benchmark output downloads
 - Out-of-sample ratio input and Out-of-Sample Evaluation metrics
 
+Dashboard supports English / 中文 labels for easier local research use. 中文模式 now
+localizes key metric labels and table column names in the Dashboard display layer. Downloaded
+CSV files keep their original English column names for programmatic use.
+
 By default, Dashboard outputs are written to:
 
 ```text

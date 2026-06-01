@@ -66,6 +66,22 @@ def test_dashboard_app_exists_and_contains_required_streamlit_content():
     assert "Step days" in text
     assert "滚动样本外测试" in text
     assert "运行滚动样本外测试" in text
+    assert "localize_dataframe_columns" in text
+    assert "总收益" in text
+    assert "年化收益" in text
+    assert "最大回撤" in text
+    assert "年化波动率" in text
+    assert "夏普比率" in text
+    assert "调仓胜率" in text
+    assert "实际输出目录" in text
+    assert "运行时间" in text
+    assert "运行 ID" in text
+    assert "基准总收益" in text
+    assert "样本外总收益" in text
+    assert "窗口 ID" in text
+    assert "训练开始" in text
+    assert "测试结束" in text
+    assert "请选择至少两个历史实验进行对比" in text
 
 
 def test_readme_documents_dashboard_command():

@@ -69,6 +69,97 @@ TRANSLATIONS = {
     "Run Walk-forward Test": "运行滚动样本外测试",
     "Walk-forward Summary": "滚动测试汇总",
     "Download walk_forward_summary.csv": "下载 walk_forward_summary.csv",
+    "Total Return": "总收益",
+    "Annual Return": "年化收益",
+    "Max Drawdown": "最大回撤",
+    "Annual Volatility": "年化波动率",
+    "Sharpe Ratio": "夏普比率",
+    "Calmar Ratio": "卡玛比率",
+    "Rebalance Win Rate": "调仓胜率",
+    "Benchmark Total Return": "基准总收益",
+    "Benchmark Max Drawdown": "基准最大回撤",
+    "Excess Total Return": "超额总收益",
+    "Split Date": "切分日期",
+    "In-Sample Total Return": "样本内总收益",
+    "In-Sample Max Drawdown": "样本内最大回撤",
+    "In-Sample Sharpe Ratio": "样本内夏普比率",
+    "Out-of-Sample Total Return": "样本外总收益",
+    "Out-of-Sample Max Drawdown": "样本外最大回撤",
+    "Out-of-Sample Sharpe Ratio": "样本外夏普比率",
+    "Actual output directory": "实际输出目录",
+    "Drawdown": "回撤曲线",
+    "Metrics Comparison": "指标对比",
+    "Config Comparison": "参数对比",
+    "NAV Comparison": "净值对比",
+    "Risk Disclaimer": "风险提示",
+}
+
+DATAFRAME_COLUMN_TRANSLATIONS = {
+    "date": "日期",
+    "symbol": "标的代码",
+    "open": "开盘价",
+    "high": "最高价",
+    "low": "最低价",
+    "close": "收盘价",
+    "volume": "成交量",
+    "amount": "成交额",
+    "run_time": "运行时间",
+    "run_id": "运行 ID",
+    "actual_output_dir": "实际输出目录",
+    "total_return": "总收益",
+    "annual_return": "年化收益",
+    "max_drawdown": "最大回撤",
+    "annual_volatility": "年化波动率",
+    "sharpe_ratio": "夏普比率",
+    "calmar_ratio": "卡玛比率",
+    "rebalance_win_rate": "调仓胜率",
+    "benchmark_total_return": "基准总收益",
+    "benchmark_max_drawdown": "基准最大回撤",
+    "excess_total_return": "超额总收益",
+    "top_n": "持仓数量 Top N",
+    "target_exposure": "目标仓位",
+    "rebalance_interval": "调仓间隔",
+    "initial_cash": "初始资金",
+    "fee_rate": "手续费率",
+    "slippage": "滑点",
+    "use_risk_manager": "使用风控",
+    "auto_run_dir": "使用自动运行目录",
+    "window_id": "窗口 ID",
+    "train_start": "训练开始",
+    "train_end": "训练结束",
+    "test_start": "测试开始",
+    "test_end": "测试结束",
+    "in_sample_total_return": "样本内总收益",
+    "in_sample_max_drawdown": "样本内最大回撤",
+    "in_sample_sharpe_ratio": "样本内夏普比率",
+    "out_of_sample_total_return": "样本外总收益",
+    "out_of_sample_max_drawdown": "样本外最大回撤",
+    "out_of_sample_sharpe_ratio": "样本外夏普比率",
+    "position_value": "持仓市值",
+    "positions_value": "持仓市值",
+    "market_value": "市值",
+    "cash": "现金",
+    "nav": "净值",
+    "weight": "权重",
+    "target_weight": "目标权重",
+    "side": "方向",
+    "quantity": "数量",
+    "price": "价格",
+    "fee": "手续费",
+    "reason": "原因",
+    "trade_date": "交易日期",
+    "trade_amount": "成交金额",
+    "cash_after": "成交后现金",
+    "position_after": "成交后持仓",
+    "signal_date": "信号日期",
+    "execute_date": "执行日期",
+    "risk_mode": "风控模式",
+    "drawdown": "回撤",
+    "strategy_nav": "策略净值",
+    "benchmark_nav": "基准净值",
+    "benchmark_symbol": "基准标的代码",
+    "metadata_path": "元数据路径",
+    "report_path": "报告路径",
 }
 
 
@@ -226,7 +317,7 @@ def main() -> None:
         return
 
     _render_summary(result["summary"])
-    st.caption(f"Actual output directory: {result['actual_output_dir']}")
+    st.caption(f"{t('Actual output directory')}: {result['actual_output_dir']}")
     _render_charts(result["nav"], result.get("strategy_vs_benchmark"))
     _render_tables(result["positions"], result["trades"], result["signals"])
     _render_report(result["report"], result["output_paths"]["report"])
@@ -239,6 +330,17 @@ def t(key: str) -> str:
     if st.session_state.get("dashboard_language", "English") == "中文":
         return TRANSLATIONS.get(key, key)
     return key
+
+
+def _is_chinese() -> bool:
+    return st.session_state.get("dashboard_language", "English") == "中文"
+
+
+def localize_dataframe_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Return a display-only DataFrame with localized column labels."""
+    if not _is_chinese():
+        return df
+    return df.rename(columns=DATAFRAME_COLUMN_TRANSLATIONS)
 
 
 def _resolve_csv_path(csv_path: str, uploaded_csv, output_dir: str) -> str | None:
@@ -307,6 +409,8 @@ def _render_parameter_sensitivity(
     out_of_sample_ratio: float,
 ) -> None:
     st.subheader(t("Parameter Sensitivity"))
+    if _is_chinese():
+        st.caption("批量运行多个参数组合，用于观察策略对参数变化是否敏感。")
     top_n_text = st.text_input(t("Top N values"), value="1,2,3")
     exposure_text = st.text_input(t("Target exposure values"), value="0.5,0.8")
     interval_text = st.text_input(t("Rebalance interval values"), value="5,10")
@@ -343,7 +447,10 @@ def _render_parameter_sensitivity(
         return
 
     st.subheader(t("Sensitivity Summary"))
-    st.dataframe(sensitivity_result["summary"], use_container_width=True)
+    st.dataframe(
+        localize_dataframe_columns(sensitivity_result["summary"]),
+        use_container_width=True,
+    )
     summary_path = Path(sensitivity_result["summary_path"])
     if summary_path.exists():
         st.download_button(
@@ -388,7 +495,11 @@ def _render_walk_forward_testing(
     benchmark_symbol: str | None,
 ) -> None:
     st.subheader(t("Walk-forward Testing"))
-    train_window_days = st.number_input(t("Train window days"), min_value=1, value=120, step=10)
+    if _is_chinese():
+        st.caption("按滚动训练/测试窗口多次回测，用于观察策略在不同时间段的稳定性。")
+    train_window_days = st.number_input(
+        t("Train window days"), min_value=1, value=120, step=10
+    )
     test_window_days = st.number_input(t("Test window days"), min_value=1, value=60, step=10)
     step_days = st.number_input(t("Step days"), min_value=1, value=60, step=10)
     if st.button(t("Run Walk-forward Test")):
@@ -423,7 +534,9 @@ def _render_walk_forward_testing(
         return
 
     st.subheader(t("Walk-forward Summary"))
-    st.dataframe(walk_forward_result["summary"], use_container_width=True)
+    st.dataframe(
+        localize_dataframe_columns(walk_forward_result["summary"]), use_container_width=True
+    )
     summary_path = Path(walk_forward_result["summary_path"])
     if summary_path.exists():
         st.download_button(
@@ -462,7 +575,7 @@ def _render_summary(summary: dict) -> None:
             ]
         )
     for index, (label, value) in enumerate(metrics):
-        columns[index % len(columns)].metric(label, value)
+        columns[index % len(columns)].metric(t(label), value)
 
     if "out_of_sample_total_return" in summary:
         st.subheader(t("Out-of-Sample Evaluation"))
@@ -486,7 +599,7 @@ def _render_summary(summary: dict) -> None:
             ),
         ]
         for index, (label, value) in enumerate(oos_metrics):
-            oos_columns[index % len(oos_columns)].metric(label, value)
+            oos_columns[index % len(oos_columns)].metric(t(label), value)
 
 
 def _render_charts(nav: pd.DataFrame, strategy_vs_benchmark: pd.DataFrame | None = None) -> None:
@@ -495,7 +608,7 @@ def _render_charts(nav: pd.DataFrame, strategy_vs_benchmark: pd.DataFrame | None
     nav_chart["date"] = pd.to_datetime(nav_chart["date"])
     st.line_chart(nav_chart.set_index("date")["nav"])
 
-    st.subheader("Drawdown")
+    st.subheader(t("Drawdown"))
     if "drawdown" in nav.columns:
         drawdown_chart = nav[["date", "drawdown"]].copy()
         drawdown_chart["date"] = pd.to_datetime(drawdown_chart["date"])
@@ -520,7 +633,9 @@ def _render_tables(positions: pd.DataFrame, trades: pd.DataFrame, signals: pd.Da
         latest_date = pd.to_datetime(positions["date"]).max()
         latest_positions = positions[pd.to_datetime(positions["date"]) == latest_date]
         st.dataframe(
-            latest_positions.sort_values("weight", ascending=False).head(10),
+            localize_dataframe_columns(
+                latest_positions.sort_values("weight", ascending=False).head(10)
+            ),
             use_container_width=True,
         )
 
@@ -528,13 +643,13 @@ def _render_tables(positions: pd.DataFrame, trades: pd.DataFrame, signals: pd.Da
     if trades.empty:
         st.write("No trades")
     else:
-        st.dataframe(trades.tail(10), use_container_width=True)
+        st.dataframe(localize_dataframe_columns(trades.tail(10)), use_container_width=True)
 
     st.subheader(t("Recent Signals"))
     if signals.empty:
         st.write("No signals")
     else:
-        st.dataframe(signals.tail(10), use_container_width=True)
+        st.dataframe(localize_dataframe_columns(signals.tail(10)), use_container_width=True)
 
 
 def _render_report(report: str, report_path: str) -> None:
@@ -572,6 +687,8 @@ def _render_downloads(output_paths: dict[str, str]) -> None:
 
 def _render_run_history(run_index_path: str | None) -> None:
     st.subheader(t("Run History"))
+    if _is_chinese():
+        st.caption("这里显示每次回测保存下来的历史实验，可选择某一次实验重新加载查看。")
     if not run_index_path:
         st.info("No run history yet.")
         return
@@ -589,7 +706,10 @@ def _render_run_history(run_index_path: str | None) -> None:
         "sharpe_ratio",
         "actual_output_dir",
     ]
-    st.dataframe(index[columns].head(20), use_container_width=True)
+    st.dataframe(
+        localize_dataframe_columns(index[columns].head(20)),
+        use_container_width=True,
+    )
     options = [
         f"{row.run_time} | {row.run_id} | {row.actual_output_dir}"
         for row in index.itertuples(index=False)
@@ -601,7 +721,8 @@ def _render_run_history(run_index_path: str | None) -> None:
         st.session_state["dashboard_result"] = historical_result
         if historical_result["missing_files"]:
             st.warning(
-                "Missing historical output files: " + ", ".join(historical_result["missing_files"])
+                "Missing historical output files: "
+                + ", ".join(historical_result["missing_files"])
             )
         else:
             st.success(f"Loaded historical run: {actual_output_dir}")
@@ -611,6 +732,11 @@ def _render_run_history(run_index_path: str | None) -> None:
 
 def _render_run_comparison(index: pd.DataFrame) -> None:
     st.subheader(t("Compare Historical Runs"))
+    if _is_chinese():
+        st.caption(
+            "请选择至少两个历史实验进行对比。"
+            "下拉框里的英文选项来自 Streamlit 组件，属于正常现象。"
+        )
     option_map = {
         _format_run_comparison_option(row): position
         for position, row in enumerate(index.itertuples(index=False))
@@ -620,7 +746,10 @@ def _render_run_comparison(index: pd.DataFrame) -> None:
         return
 
     if len(selected_options) < 2:
-        st.info("Please select at least 2 runs to compare.")
+        if _is_chinese():
+            st.info("请选择至少两个历史实验进行对比。")
+        else:
+            st.info("Please select at least 2 runs to compare.")
         return
     if len(selected_options) > 5:
         st.info("Please select no more than 5 runs to compare.")
@@ -631,13 +760,13 @@ def _render_run_comparison(index: pd.DataFrame) -> None:
     if comparison["missing_files"]:
         st.warning("\n".join(comparison["missing_files"]))
 
-    st.subheader("Metrics Comparison")
-    st.dataframe(comparison["metrics"], use_container_width=True)
+    st.subheader(t("Metrics Comparison"))
+    st.dataframe(localize_dataframe_columns(comparison["metrics"]), use_container_width=True)
 
-    st.subheader("Config Comparison")
-    st.dataframe(comparison["configs"], use_container_width=True)
+    st.subheader(t("Config Comparison"))
+    st.dataframe(localize_dataframe_columns(comparison["configs"]), use_container_width=True)
 
-    st.subheader("NAV Comparison")
+    st.subheader(t("NAV Comparison"))
     if comparison["nav_comparison"].empty:
         st.info("No NAV comparison data is available.")
     else:
@@ -654,7 +783,7 @@ def _format_run_comparison_option(row) -> str:
 
 
 def _render_risk_disclaimer() -> None:
-    st.subheader("Risk Disclaimer")
+    st.subheader(t("Risk Disclaimer"))
     st.markdown(
         "- This Dashboard is for local historical backtest visualization only.\n"
         "- It does not connect to real brokers.\n"

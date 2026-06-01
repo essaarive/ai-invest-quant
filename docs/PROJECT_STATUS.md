@@ -28,6 +28,7 @@ The project is intended for research, learning, and reproducible strategy experi
 - Markdown report
 - Streamlit Dashboard
 - English / 中文 Dashboard labels
+- Enhanced Chinese Dashboard display labels and localized table columns
 - CSV upload
 - Output downloads
 - JSON experiment config
