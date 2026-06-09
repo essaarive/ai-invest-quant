@@ -4,19 +4,11 @@ from __future__ import annotations
 
 import pandas as pd
 
-REQUIRED_COLUMNS = (
-    "date",
-    "symbol",
-    "open",
-    "high",
-    "low",
-    "close",
-    "volume",
-    "amount",
-)
+from ai_invest_quant.data.constants import BASE_PRICE_COLUMNS, OHLC_COLUMNS, VOLUME_AMOUNT_COLUMNS
 
-PRICE_COLUMNS = ("open", "high", "low", "close")
-NON_NEGATIVE_COLUMNS = ("volume", "amount")
+REQUIRED_COLUMNS = BASE_PRICE_COLUMNS
+PRICE_COLUMNS = OHLC_COLUMNS
+NON_NEGATIVE_COLUMNS = VOLUME_AMOUNT_COLUMNS
 
 
 def validate_market_data(df: pd.DataFrame) -> None:

@@ -1,1 +1,1 @@
-"""Markdown report generation utilities."""
+"""Report, metadata, run index, run loader, and run comparison utilities."""

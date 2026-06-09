@@ -7,6 +7,8 @@ import math
 import numpy as np
 import pandas as pd
 
+from ai_invest_quant.performance.utils import prepare_nav_dataframe
+
 NAV_COLUMNS = ("date", "equity", "nav")
 TRADES_COLUMNS = ("trade_date", "trade_amount")
 SIGNALS_COLUMNS = ("execute_date",)
@@ -176,19 +178,10 @@ def _prepare_nav(nav_df: pd.DataFrame) -> pd.DataFrame:
     if nav_df.empty:
         raise ValueError("nav_df cannot be empty")
 
-    nav = nav_df.copy()
-    nav["date"] = pd.to_datetime(nav["date"], errors="raise")
-    nav["equity"] = pd.to_numeric(nav["equity"], errors="raise")
-    nav["nav"] = pd.to_numeric(nav["nav"], errors="raise")
-    nav = nav.sort_values("date", kind="mergesort").reset_index(drop=True)
-
-    if nav["nav"].iloc[0] <= 0:
+    nav_values = pd.to_numeric(nav_df["nav"], errors="raise")
+    if nav_values.iloc[0] <= 0:
         raise ValueError("initial nav must be > 0")
-
-    if (nav["nav"] <= 0).any():
+    if (nav_values <= 0).any():
         raise ValueError("nav values must be > 0")
 
-    if (nav["equity"] <= 0).any():
-        raise ValueError("equity values must be > 0")
-
-    return nav
+    return prepare_nav_dataframe(nav_df)

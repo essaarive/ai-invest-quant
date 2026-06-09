@@ -46,6 +46,7 @@ Historical run comparison:
 - [Roadmap](docs/ROADMAP.md)
 - [Demo Guide](docs/DEMO_GUIDE.md)
 - [Data Guide](docs/DATA_GUIDE.md)
+- [Real Data Guide](docs/REAL_DATA_GUIDE.md)
 
 ## Quick Start
 
@@ -131,6 +132,36 @@ Rules:
 
 The data adapter can standardize common Chinese and English ETF CSV exports into this format.
 See [Data Guide](docs/DATA_GUIDE.md) for examples.
+
+## Real Data Workflow
+
+The project supports a local real-data preparation workflow with watchlist support,
+multi CSV standardization, and asset metadata output.
+
+Typical flow:
+
+```text
+raw CSV files
+-> watchlist.csv
+-> standardize_many_price_csvs
+-> prices.csv
+-> asset_metadata.csv
+-> data_quality_report.csv
+-> Dashboard / CLI analysis
+```
+
+This workflow keeps the existing backtest input format unchanged:
+
+```text
+date,symbol,open,high,low,close,volume,amount
+```
+
+See [Real Data Guide](docs/REAL_DATA_GUIDE.md) for watchlist examples, supported markets,
+asset types, and limitations.
+
+After importing real data, it is recommended to run the Data Quality Report first. The report
+can be saved as `data_quality_report.csv` and checks duplicate dates, missing values,
+non-positive prices, invalid high/low ranges, and negative volume or amount values.
 
 ## Install
 

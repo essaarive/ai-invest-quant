@@ -6,7 +6,9 @@ Current architecture status: V0.3.2 Research Workbench.
 
 AI Invest Quant is organized as a local research pipeline. Each module owns one part of the workflow:
 
-- Data Layer: adapt external ETF CSV columns, load, validate, clean, sort, and deduplicate local market data
+- Asset Layer: manage watchlists and asset metadata for local real-data workflows
+- Data Layer: adapt external ETF CSV columns, standardize multiple CSV files, load, validate, clean, sort, and deduplicate local market data
+- Data Quality Layer: inspect standardized OHLCV data before analysis
 - Indicators: calculate moving averages and returns
 - Strategy: standardize strategy metadata/interfaces and generate ETF rotation target-weight signals
 - Backtest Engine: execute signals on historical prices and produce NAV, trades, and positions
@@ -21,7 +23,11 @@ AI Invest Quant is organized as a local research pipeline. Each module owns one 
 ## Data Flow
 
 ```text
-CSV
+raw CSV files
+-> watchlist / asset metadata
+-> multi CSV standardization
+-> standardized CSV
+-> data quality report
 -> data adapter
 -> loader / validator / cleaner
 -> indicators
@@ -35,7 +41,8 @@ CSV
 
 ## Core Modules
 
-- `src/ai_invest_quant/data/`: ETF CSV data adapter, CSV loading, field validation, numeric conversion, date parsing, sorting, and deduplication
+- `src/ai_invest_quant/assets/`: Watchlist loading, validation, and saving
+- `src/ai_invest_quant/data/`: ETF CSV data adapter, multi CSV standardization, standardized OHLCV quality checks, CSV loading, field validation, numeric conversion, date parsing, sorting, and deduplication
 - `src/ai_invest_quant/indicators/`: moving averages and return indicators
 - `src/ai_invest_quant/strategies/`: Strategy Protocol, StrategyMetadata, ETFRotationStrategy wrapper, and ETF rotation signal generation
 - `src/ai_invest_quant/backtest/`: historical execution engine
@@ -57,6 +64,26 @@ CSV
 - Fees and slippage are modeled.
 - Remaining unallocated capital is kept as cash.
 - Benchmark is used only for historical comparison.
+
+## Asset Layer
+
+The asset layer supports a local real-data workflow:
+
+- `watchlist.csv` records `symbol`, `name`, `market`, `asset_type`, `currency`, and `data_path`.
+- Watchlist validation checks required fields and allowed market / asset type values.
+- Multi CSV standardization reads each watchlist row, standardizes its raw CSV, merges prices,
+  and writes `asset_metadata.csv`.
+- The standardized prices file still uses `date,symbol,open,high,low,close,volume,amount`.
+
+## Data Quality Layer
+
+The data quality layer checks standardized OHLCV data before analysis:
+
+- `quality_report.py` generates one report row per symbol.
+- It checks duplicate dates, missing values, non-positive prices, invalid high/low ranges,
+  negative volume, and negative amount.
+- It can write `data_quality_report.csv` for audit and review.
+- The report is a basic quality gate and does not change the standardized OHLCV format.
 
 ## Strategy Layer
 

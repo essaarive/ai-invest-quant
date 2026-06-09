@@ -12,6 +12,7 @@ from ai_invest_quant.performance.metrics import (
     calculate_sharpe_ratio,
     calculate_total_return,
 )
+from ai_invest_quant.performance.utils import prepare_nav_dataframe
 
 
 def split_nav_in_out_sample(
@@ -19,7 +20,7 @@ def split_nav_in_out_sample(
 ) -> dict[str, Any]:
     """Split NAV into in-sample and out-of-sample periods by date."""
     ratio = _validate_ratio(out_of_sample_ratio)
-    nav = _prepare_nav(nav_df)
+    nav = prepare_nav_dataframe(nav_df)
 
     if ratio == 0:
         return {
@@ -62,25 +63,6 @@ def calculate_oos_summary(nav_df: pd.DataFrame, out_of_sample_ratio: float = 0.3
         "out_of_sample_sharpe_ratio": calculate_sharpe_ratio(out_of_sample_nav),
         "split_date": split["split_date"],
     }
-
-
-def _prepare_nav(nav_df: pd.DataFrame) -> pd.DataFrame:
-    missing = [column for column in ["date", "equity"] if column not in nav_df.columns]
-    if missing:
-        raise ValueError(f"Missing required nav columns: {', '.join(missing)}")
-    if nav_df.empty:
-        raise ValueError("nav_df cannot be empty")
-
-    nav = nav_df.copy()
-    nav["date"] = pd.to_datetime(nav["date"], errors="raise")
-    nav["equity"] = pd.to_numeric(nav["equity"], errors="raise")
-    if "nav" not in nav.columns:
-        if nav["equity"].iloc[0] <= 0:
-            raise ValueError("initial equity must be > 0")
-        nav["nav"] = nav["equity"] / nav["equity"].iloc[0]
-    else:
-        nav["nav"] = pd.to_numeric(nav["nav"], errors="raise")
-    return nav.sort_values("date", kind="mergesort").reset_index(drop=True)
 
 
 def _validate_ratio(out_of_sample_ratio: float) -> float:

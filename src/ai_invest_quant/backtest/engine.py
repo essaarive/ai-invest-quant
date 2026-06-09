@@ -5,9 +5,10 @@ from __future__ import annotations
 import pandas as pd
 
 from ai_invest_quant.backtest.broker import execute_trade
+from ai_invest_quant.data.constants import OHLC_COLUMNS
 from ai_invest_quant.portfolio.portfolio import Portfolio
 
-PRICE_COLUMNS = ("date", "symbol", "open", "close")
+PRICE_COLUMNS = ("date", "symbol", OHLC_COLUMNS[0], OHLC_COLUMNS[3])
 SIGNAL_COLUMNS = ("signal_date", "execute_date", "symbol", "target_weight")
 
 

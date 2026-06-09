@@ -4,20 +4,12 @@ from __future__ import annotations
 
 import pandas as pd
 
+from ai_invest_quant.data.constants import BASE_PRICE_COLUMNS
 from ai_invest_quant.strategies.base import StrategyMetadata
 
-REQUIRED_COLUMNS = (
-    "date",
-    "symbol",
-    "open",
-    "high",
-    "low",
-    "close",
-    "volume",
-    "amount",
-    "ma60",
-    "return_20d",
-)
+REQUIRED_PRICE_COLUMNS = BASE_PRICE_COLUMNS
+REQUIRED_INDICATOR_COLUMNS = ("ma60", "return_20d")
+REQUIRED_COLUMNS = REQUIRED_PRICE_COLUMNS + REQUIRED_INDICATOR_COLUMNS
 
 
 class ETFRotationStrategy:

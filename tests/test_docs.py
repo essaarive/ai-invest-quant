@@ -9,6 +9,7 @@ def test_project_docs_exist():
     assert (PROJECT_ROOT / "docs" / "ROADMAP.md").exists()
     assert (PROJECT_ROOT / "docs" / "DEMO_GUIDE.md").exists()
     assert (PROJECT_ROOT / "docs" / "DATA_GUIDE.md").exists()
+    assert (PROJECT_ROOT / "docs" / "REAL_DATA_GUIDE.md").exists()
 
 
 def test_dashboard_screenshot_assets_exist():
@@ -24,6 +25,8 @@ def test_project_status_contains_required_content():
     assert "257 passed" in text
     assert "CLI `run-walk-forward` support" in text
     assert "Lightweight strategy interface" in text
+    assert "Real data workflow" in text
+    assert "Data quality report" in text
     assert "Not Supported" in text
 
 
@@ -35,6 +38,8 @@ def test_architecture_contains_required_content():
     assert "Strategy Protocol" in text
     assert "StrategyMetadata" in text
     assert "ETFRotationStrategy" in text
+    assert "Asset Layer" in text
+    assert "Data Quality Layer" in text
     assert "sensitivity" in text
 
 
@@ -46,6 +51,8 @@ def test_roadmap_contains_required_content():
     assert "CLI run-walk-forward" in text
     assert "Walk-forward testing" in text
     assert "Markdown Report bilingual support" in text
+    assert "Data Fetcher Interface" in text
+    assert "AI analysis report" in text
 
 
 def test_readme_links_to_project_docs():
@@ -55,6 +62,7 @@ def test_readme_links_to_project_docs():
     assert "docs/ARCHITECTURE.md" in text
     assert "docs/ROADMAP.md" in text
     assert "docs/DATA_GUIDE.md" in text
+    assert "docs/REAL_DATA_GUIDE.md" in text
 
 
 def test_readme_showcase_sections_exist():
@@ -73,6 +81,8 @@ def test_readme_showcase_sections_exist():
     assert "Benchmark" in text
     assert "Out-of-Sample" in text
     assert "What Is Not Supported" in text
+    assert "Data Quality Report" in text
+    assert "data_quality_report.csv" in text
 
 
 def test_demo_guide_contains_dashboard_and_history_comparison():
@@ -96,3 +106,12 @@ def test_data_guide_documents_standard_schema_and_adapter():
 
     assert "date,symbol,open,high,low,close,volume,amount" in text
     assert "standardize_price_csv" in text
+
+
+def test_real_data_guide_documents_watchlist_workflow():
+    text = (PROJECT_ROOT / "docs" / "REAL_DATA_GUIDE.md").read_text(encoding="utf-8")
+
+    assert "watchlist.csv" in text
+    assert "standardize_many_price_csvs" in text
+    assert "asset_metadata.csv" in text
+    assert "generate_data_quality_report" in text

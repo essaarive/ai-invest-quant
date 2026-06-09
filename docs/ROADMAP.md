@@ -6,6 +6,8 @@ Current release: V0.3.2 Research Workbench.
 
 - Local CSV data loading, validation, cleaning, sorting, and deduplication
 - Real ETF CSV adapter
+- Real Data Workflow
+- Data Quality Report
 - Moving average and return indicators
 - ETF rotation signal generation
 - Strategy interface
@@ -41,6 +43,15 @@ Current release: V0.3.2 Research Workbench.
 - Better real-data examples
 - Chinese/English dashboard labels
 - Markdown Report bilingual support
+- Data Quality Dashboard
+- Data Fetcher Interface
+- AkShare Fetcher
+- yfinance Fetcher
+- Binance Crypto Fetcher
+- AI analysis report
+- News / policy analyzer
+- Crypto spot research
+- Recommendation journal
 - Additional strategy examples:
   - dual moving average strategy
   - momentum strategy

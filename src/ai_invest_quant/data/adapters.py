@@ -6,7 +6,9 @@ from pathlib import Path
 
 import pandas as pd
 
-STANDARD_COLUMNS = ["date", "symbol", "open", "high", "low", "close", "volume", "amount"]
+from ai_invest_quant.data.constants import BASE_PRICE_COLUMNS
+
+STANDARD_COLUMNS = list(BASE_PRICE_COLUMNS)
 
 COLUMN_ALIASES = {
     "date": ["date", "Date", "datetime", "trade_date", "日期", "交易日期"],

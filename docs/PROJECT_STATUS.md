@@ -18,6 +18,8 @@ The project is intended for research, learning, and reproducible strategy experi
 
 - Local CSV data loading
 - ETF CSV data adapter
+- Real data workflow with watchlist and multi-CSV standardization
+- Data quality report for standardized OHLCV data
 - Data validation and cleaning
 - Trend and return indicators
 - Lightweight strategy interface
